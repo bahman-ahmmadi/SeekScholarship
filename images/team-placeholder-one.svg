@@ -1,0 +1,10 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" role="img" aria-label="Illustrated portrait placeholder">
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#d9ecf5"/><stop offset="1" stop-color="#b6d1e2"/></linearGradient></defs>
+  <rect width="600" height="450" fill="url(#bg)"/>
+  <circle cx="300" cy="205" r="126" fill="#e8b998"/>
+  <path d="M175 202c-5-99 42-153 128-153 91 0 139 59 124 161-19-16-34-47-41-79-40 43-112 66-211 71z" fill="#263951"/>
+  <path d="M95 450c10-104 77-157 205-157s195 53 205 157" fill="#397ba4"/>
+  <path d="M255 280h90v54c-18 23-72 23-90 0z" fill="#d69d7e"/>
+  <circle cx="253" cy="213" r="8" fill="#263951"/><circle cx="347" cy="213" r="8" fill="#263951"/>
+  <path d="M269 253q31 24 62 0" fill="none" stroke="#9d5e50" stroke-width="7" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="Explore scholarship opportunities by awarding country and find destinations with published scholarships.">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg"><title>Countries | SeekScholarship</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <nav>
+        <a class="logo" href="index.html" aria-label="SeekScholarship home"><img class="site-logo-full" src="LogPhoto.png" alt=""></a>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+        <div class="nav-dropdown">
+            <a href="scholarships.html" class="nav-dropdown-title">Scholarships</a>
+
+            <div class="dropdown-menu">
+                <a href="scholarships.html?degree=high-school">High School Scholarships</a>
+                <a href="scholarships.html?degree=bachelor">Bachelor Scholarships</a>
+                <a href="scholarships.html?degree=master">Master Scholarships</a>
+                <a href="scholarships.html?degree=phd">PhD Scholarships</a>
+            </div>
+        </div>
+            <a href="countries.html">Countries</a>
+<div class="nav-dropdown about-dropdown">
+                <span class="nav-dropdown-title" tabindex="0">About</span>
+                <div class="dropdown-menu">
+                    <a href="about.html">About SeekScholarship</a>
+                    <a href="team.html">Our Team</a>
+                </div>
+            </div>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <main class="countries-page">
+
+        <section class="page-header countries-hero">
+            <h1>Explore Scholarships by Country</h1>
+            <p>
+                Find scholarship opportunities available in countries
+                around the world.
+            </p>
+        </section>
+
+        <section class="countries-browse-heading" aria-labelledby="countries-browse-title">
+            <h2 id="countries-browse-title">Choose a country to explore scholarships</h2>
+            <p>Select a destination to see the opportunities available there.</p>
+        </section>
+
+        <section class="countries-grid">
+
+            <a href="scholarships.html?country=Turkey" class="country-card" data-country="Turkey">
+                <h2><img class="country-flag" src="images/flags/turkey.svg" alt="">Turkey</h2>
+                <p class="country-scholarship-count"></p>
+            </a>
+
+            <a href="scholarships.html?country=Canada" class="country-card" data-country="Canada">
+                <h2><img class="country-flag" src="images/flags/canada.svg" alt="">Canada</h2>
+                <p class="country-scholarship-count"></p>
+            </a>
+
+            <a href="scholarships.html?country=United States" class="country-card" data-country="United States">
+                <h2><img class="country-flag" src="images/flags/united-states.svg" alt="">United States</h2>
+                <p class="country-scholarship-count"></p>
+            </a>
+
+            <a href="scholarships.html?country=United Kingdom" class="country-card" data-country="United Kingdom">
+                <h2><img class="country-flag" src="images/flags/united-kingdom.svg" alt="">United Kingdom</h2>
+                <p class="country-scholarship-count"></p>
+            </a>
+
+            <a href="scholarships.html?country=Germany" class="country-card" data-country="Germany">
+                <h2><img class="country-flag" src="images/flags/germany.svg" alt="">Germany</h2>
+                <p class="country-scholarship-count"></p>
+            </a>
+
+            <a href="scholarships.html?country=Italy" class="country-card" data-country="Italy">
+                <h2><img class="country-flag" src="images/flags/italy.svg" alt="">Italy</h2>
+                <p class="country-scholarship-count"></p>
+            </a>
+
+        </section>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/supabase-data.js"></script>
+    <script src="js/script.js"></script>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <section class="site-footer-brand" aria-labelledby="footer-brand-title">
+                <h2 id="footer-brand-title"><img class="footer-site-logo-full" src="LogPhoto.png" alt="SeekScholarship" width="280" height="101" loading="lazy" decoding="async"></h2>
+                <p>Explore study funding opportunities and take your next step toward an education abroad.</p>
+            </section>
+            <section aria-labelledby="footer-info-title">
+                <h3 id="footer-info-title">Disclaimer &amp; information</h3>
+                <p>Scholarship details can change. SeekScholarship is an independent discovery resource and is not a scholarship provider. Confirm eligibility, deadlines, and application instructions with the official organization before applying.</p>
+            </section>
+            <section aria-labelledby="footer-social-title">
+                <h3 id="footer-social-title">Find us soon</h3>
+                <ul class="site-footer-social-list">
+                    <li>Instagram · coming soon</li>
+                    <li>Facebook · coming soon</li>
+                    <li>LinkedIn · coming soon</li>
+                </ul>
+            </section>
+        </div>
+        <div class="site-footer-bottom">© 2026 SeekScholarship. All rights reserved.</div>
+    </footer>
+</body>
+</html>

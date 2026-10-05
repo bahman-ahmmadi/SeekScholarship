@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    
+    <meta name="description" content="Review scholarship eligibility, benefits, deadlines, and application details on SeekScholarship.">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg"><title>Scholarship details | SeekScholarship</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <nav>
+        <a class="logo" href="index.html" aria-label="SeekScholarship home"><img class="site-logo-full" src="LogPhoto.png" alt=""></a>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <div class="nav-dropdown">
+                <a href="scholarships.html" class="nav-dropdown-title">Scholarships</a>
+                <div class="dropdown-menu">
+                    <a href="scholarships.html?degree=high-school">High School Scholarships</a>
+                    <a href="scholarships.html?degree=bachelor">Bachelor Scholarships</a>
+                    <a href="scholarships.html?degree=master">Master Scholarships</a>
+                    <a href="scholarships.html?degree=phd">PhD Scholarships</a>
+                </div>
+            </div>
+            <a href="countries.html">Countries</a>
+<div class="nav-dropdown about-dropdown">
+                <span class="nav-dropdown-title" tabindex="0">About</span>
+                <div class="dropdown-menu">
+                    <a href="about.html">About SeekScholarship</a>
+                    <a href="team.html">Our Team</a>
+                </div>
+            </div>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+
+    <section class="scholarship-hero-banner" hidden><div class="scholarship-hero-content"><p class="hero-label" id="scholarship-country-label" hidden></p><h1 id="scholarship-name"></h1></div></section>
+
+    <main class="scholarship-page" hidden>
+
+
+        <div class="scholarship-info">
+
+            <div data-scholarship-field="funding">
+                <span>Funding</span>
+                <strong id="scholarship-funding"></strong>
+            </div>
+
+            <div data-scholarship-field="degree">
+                <span>Degree</span>
+                <strong id="scholarship-degree"></strong>
+            </div>
+
+            <div data-scholarship-field="country">
+                <span>Country</span>
+                <strong id="scholarship-country"></strong>
+            </div>
+
+            <div data-scholarship-field="deadline">
+                <span>Deadline</span>
+                <strong id="scholarship-deadline"></strong>
+            </div>
+
+        </div>
+
+
+        <section class="scholarship-extra-details" aria-labelledby="extra-details-title" hidden>
+            <h2 id="extra-details-title">Additional Details</h2>
+            <dl class="scholarship-detail-list">
+                <div class="scholarship-detail-item" data-detail-field="gender">
+                    <span class="scholarship-detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20v-1.4a6.5 6.5 0 0 1 13 0V20z"/></svg></span>
+                    <div><dt>Gender</dt><dd id="scholarship-gender"></dd></div>
+                </div>
+                <div class="scholarship-detail-item" data-detail-field="eligibleCountries">
+                    <span class="scholarship-detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.5 12h17M12 3c2.2 2.4 3.2 5.4 3.2 9s-1 6.6-3.2 9c-2.2-2.4-3.2-5.4-3.2-9s1-6.6 3.2-9z"/></svg></span>
+                    <div><dt>Eligible Countries</dt><dd id="scholarship-eligible-countries"></dd></div>
+                </div>
+                <div class="scholarship-detail-item" data-detail-field="languageRequirement">
+                    <span class="scholarship-detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5.5h16v11H11l-5 3v-3H4z"/><path d="M8 9h8M8 12.5h5"/></svg></span>
+                    <div><dt>Language Requirement</dt><dd id="scholarship-language"></dd></div>
+                </div>
+                <div class="scholarship-detail-item" data-detail-field="field">
+                    <span class="scholarship-detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 5.5c3.1-.9 6-.4 8.5 1.3v13c-2.5-1.7-5.4-2.2-8.5-1.3zM20.5 5.5c-3.1-.9-6-.4-8.5 1.3v13c2.5-1.7 5.4-2.2 8.5-1.3z"/></svg></span>
+                    <div><dt>Fields of Study</dt><dd id="scholarship-fields"></dd></div>
+                </div>
+            </dl>
+        </section>
+
+        <section class="details-section" id="scholarship-description-section" hidden>
+
+            <h2>About the Scholarship</h2>
+
+            <div id="scholarship-description" class="scholarship-rich-content"></div>
+
+        </section>
+
+
+        <section class="details-section" id="scholarship-summary-section" aria-labelledby="scholarship-summary-title" hidden>
+            <h2 id="scholarship-summary-title">Summary</h2>
+            <ul class="scholarship-summary-list">
+                <li data-summary-field="degree"><strong>Degree Level:</strong> <span id="summary-degree"></span></li>
+                <li data-summary-field="funding"><strong>Funding Type:</strong> <span id="summary-funding"></span></li>
+                <li data-summary-field="eligibleCountries"><strong>Eligible Countries:</strong> <span id="summary-countries"></span></li>
+                <li data-summary-field="languageRequirement"><strong>Language Requirement:</strong> <span id="summary-language"></span></li>
+                <li data-summary-field="field"><strong>Field of Study:</strong> <span id="summary-field"></span></li>
+                <li data-summary-field="country"><strong>Awarding Country:</strong> <span id="summary-country"></span></li>
+                <li data-summary-field="deadline"><strong>Deadline:</strong> <span id="summary-deadline"></span></li>
+            </ul>
+            <ul class="scholarship-summary-list" id="custom-summary-details"></ul>
+        </section>
+
+        <div id="custom-scholarship-sections"></div>
+
+        <section class="details-section" id="scholarship-benefits-section" hidden>
+
+            <h2>Benefits</h2>
+
+            <ul id="scholarship-benefits"></ul>
+
+        </section>
+
+
+        <section class="details-section" id="scholarship-eligibility-section" hidden>
+
+            <h2>Eligibility Requirements</h2>
+
+            <ul id="scholarship-eligibility"></ul>
+
+        </section>
+
+
+        <section class="details-section" id="scholarship-documents-section" hidden>
+
+            <h2>Required Documents</h2>
+
+            <ul id="scholarship-documents"></ul>
+
+        </section>
+
+
+        <section class="details-section" id="scholarship-application-section" hidden>
+
+            <h2>How to Apply</h2>
+
+            <div id="scholarship-application" class="scholarship-rich-content"></div>
+
+            <a id="scholarship-application-link" href="#" class="apply-button" target="_blank" rel="noopener noreferrer" hidden>
+                Apply Now
+            </a>
+
+        </section>
+
+    </main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/supabase-data.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.6/dist/purify.min.js"></script>
+<script src="js/scholarship.js"></script>
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <section class="site-footer-brand" aria-labelledby="footer-brand-title">
+                <h2 id="footer-brand-title"><img class="footer-site-logo-full" src="LogPhoto.png" alt="SeekScholarship" width="280" height="101" loading="lazy" decoding="async"></h2>
+                <p>Explore study funding opportunities and take your next step toward an education abroad.</p>
+            </section>
+            <section aria-labelledby="footer-info-title">
+                <h3 id="footer-info-title">Disclaimer &amp; information</h3>
+                <p>Scholarship details can change. SeekScholarship is an independent discovery resource and is not a scholarship provider. Confirm eligibility, deadlines, and application instructions with the official organization before applying.</p>
+            </section>
+            <section aria-labelledby="footer-social-title">
+                <h3 id="footer-social-title">Find us soon</h3>
+                <ul class="site-footer-social-list">
+                    <li>Instagram · coming soon</li>
+                    <li>Facebook · coming soon</li>
+                    <li>LinkedIn · coming soon</li>
+                </ul>
+            </section>
+        </div>
+        <div class="site-footer-bottom">© 2026 SeekScholarship. All rights reserved.</div>
+    </footer>
+</body>
+</html>

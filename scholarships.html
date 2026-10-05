@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="Search published scholarships by keyword, awarding country, or degree and review deadlines and eligibility details.">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>Scholarships | SeekScholarship</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <nav>
+        <a class="logo" href="index.html" aria-label="SeekScholarship home"><img class="site-logo-full" src="LogPhoto.png" alt=""></a>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+        <div class="nav-dropdown">
+            <a href="scholarships.html" class="nav-dropdown-title">Scholarships</a>
+
+            <div class="dropdown-menu">
+                <a href="scholarships.html?degree=high-school">High School Scholarships</a>
+                <a href="scholarships.html?degree=bachelor">Bachelor Scholarships</a>
+                <a href="scholarships.html?degree=master">Master Scholarships</a>
+                <a href="scholarships.html?degree=phd">PhD Scholarships</a>
+            </div>
+        </div>
+            <a href="countries.html">Countries</a>
+<div class="nav-dropdown about-dropdown">
+                <span class="nav-dropdown-title" tabindex="0">About</span>
+                <div class="dropdown-menu">
+                    <a href="about.html">About SeekScholarship</a>
+                    <a href="team.html">Our Team</a>
+                </div>
+            </div>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+<main class="scholarships-page">
+<section class="scholarships-hero">
+<div class="page-header">
+    <h1 id="scholarship-page-title">All Scholarships</h1>
+    <p id="scholarship-page-description">
+        Explore scholarship opportunities for international students and find the right opportunity for your goals.
+    </p>
+    <div class="scholarship-search-row">
+        <div class="scholarship-search">
+            <input
+                type="text"
+                id="scholarship-search"
+                placeholder="Search by keyword or scholarship title..."
+                aria-label="Search scholarships by keyword or title"
+            >
+        </div>
+        <span class="search-divider" aria-hidden="true">OR</span>
+        <div class="scholarship-filter-row">
+            <div class="scholarship-country-filter">
+                <select id="scholarship-country" aria-label="Filter scholarships by awarding country">
+                    <option value="">Choose a country</option>
+                    <option value="Turkey">Turkey</option>
+                    <option value="Canada">Canada</option>
+                    <option value="United States">United States</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Germany">Germany</option>
+                    <option value="Italy">Italy</option>
+                </select>
+            </div>
+            <div class="scholarship-degree-filter">
+                <select id="scholarship-degree" aria-label="Filter scholarships by degree">
+                    <option value="">Choose a degree</option>
+                    <option value="High School">High School</option>
+                    <option value="Bachelor">Bachelor</option>
+                    <option value="Master">Master</option>
+                    <option value="PhD">PhD</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <button id="clear-filters" class="clear-filters" type="button">
+    Clear Filters
+    </button>
+</div>
+</section>
+
+<section class="scholarships scholarships-results">
+
+    <div class="section-heading">
+        <p class="section-label">EXPLORE OPPORTUNITIES</p>
+        <h2>Featured Scholarships</h2>
+        <p>Discover opportunities selected for international students.</p>
+    </div>
+
+    <div class="scholarship-grid" id="scholarship-grid" aria-live="polite" aria-busy="true"><p class="scholarship-loading" role="status">Loading scholarships...</p></div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/supabase-data.js"></script>
+<script src="js/script.js"></script>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <section class="site-footer-brand" aria-labelledby="footer-brand-title">
+                <h2 id="footer-brand-title"><img class="footer-site-logo-full" src="LogPhoto.png" alt="SeekScholarship" width="280" height="101" loading="lazy" decoding="async"></h2>
+                <p>Explore study funding opportunities and take your next step toward an education abroad.</p>
+            </section>
+            <section aria-labelledby="footer-info-title">
+                <h3 id="footer-info-title">Disclaimer &amp; information</h3>
+                <p>Scholarship details can change. SeekScholarship is an independent discovery resource and is not a scholarship provider. Confirm eligibility, deadlines, and application instructions with the official organization before applying.</p>
+            </section>
+            <section aria-labelledby="footer-social-title">
+                <h3 id="footer-social-title">Find us soon</h3>
+                <ul class="site-footer-social-list">
+                    <li>Instagram · coming soon</li>
+                    <li>Facebook · coming soon</li>
+                    <li>LinkedIn · coming soon</li>
+                </ul>
+            </section>
+        </div>
+        <div class="site-footer-bottom">© 2026 SeekScholarship. All rights reserved.</div>
+    </footer>
+</body>
+</html>

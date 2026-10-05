@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    
+    <meta name="description" content="Contact the SeekScholarship team with questions, corrections, or feedback.">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg"><title>Contact | SeekScholarship</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <nav>
+        <a class="logo" href="index.html" aria-label="SeekScholarship home"><img class="site-logo-full" src="LogPhoto.png" alt=""></a>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+        <div class="nav-dropdown">
+            <a href="scholarships.html" class="nav-dropdown-title">Scholarships</a>
+
+            <div class="dropdown-menu">
+                <a href="scholarships.html?degree=high-school">High School Scholarships</a>
+                <a href="scholarships.html?degree=bachelor">Bachelor Scholarships</a>
+                <a href="scholarships.html?degree=master">Master Scholarships</a>
+                <a href="scholarships.html?degree=phd">PhD Scholarships</a>
+            </div>
+        </div>
+            <a href="countries.html">Countries</a>
+<div class="nav-dropdown about-dropdown">
+                <span class="nav-dropdown-title" tabindex="0">About</span>
+                <div class="dropdown-menu">
+                    <a href="about.html">About SeekScholarship</a>
+                    <a href="team.html">Our Team</a>
+                </div>
+            </div>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+
+    <main class="contact-page">
+
+        <section class="page-header">
+
+            <p class="section-label">GET IN TOUCH</p>
+
+            <h1>Contact Us</h1>
+
+            <p>
+                Have a scholarship to share, found incorrect
+                information, or have a question? Send us a message.
+            </p>
+
+        </section>
+
+
+        <section class="contact-section" aria-label="Send SeekScholarship a message">
+            <aside class="contact-aside">
+                <p class="section-label">CONTACT SeekScholarship</p>
+                <h2>How can we help?</h2>
+                <p>Questions, scholarship updates, or corrections? Send us a message.</p>
+            </aside>
+
+            <div class="contact-form-column">
+                <form id="contact-form" action="https://formspree.io/f/xqparagr" method="POST">
+                    <input type="hidden" name="_subject" value="New SeekScholarship contact message">
+                    <div class="contact-honeypot" aria-hidden="true">
+                        <label for="contact-website">Leave this field empty</label>
+                        <input type="text" id="contact-website" name="_gotcha" tabindex="-1" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" placeholder="Your name" autocomplete="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Your email" autocomplete="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="6" placeholder="Write your message..." required></textarea>
+                    </div>
+
+                    <button type="submit">Send Message</button>
+                </form>
+                <p id="form-message" role="status" aria-live="polite"></p>
+                <p class="contact-privacy-note">Your message is sent securely through Formspree.</p>
+            </div>
+        </section>
+
+    </main>
+
+<script src="js/script.js"></script>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <section class="site-footer-brand" aria-labelledby="footer-brand-title">
+                <h2 id="footer-brand-title"><img class="footer-site-logo-full" src="LogPhoto.png" alt="SeekScholarship" width="280" height="101" loading="lazy" decoding="async"></h2>
+                <p>Explore study funding opportunities and take your next step toward an education abroad.</p>
+            </section>
+            <section aria-labelledby="footer-info-title">
+                <h3 id="footer-info-title">Disclaimer &amp; information</h3>
+                <p>Scholarship details can change. SeekScholarship is an independent discovery resource and is not a scholarship provider. Confirm eligibility, deadlines, and application instructions with the official organization before applying.</p>
+            </section>
+            <section aria-labelledby="footer-social-title">
+                <h3 id="footer-social-title">Find us soon</h3>
+                <ul class="site-footer-social-list">
+                    <li>Instagram · coming soon</li>
+                    <li>Facebook · coming soon</li>
+                    <li>LinkedIn · coming soon</li>
+                </ul>
+            </section>
+        </div>
+        <div class="site-footer-bottom">© 2026 SeekScholarship. All rights reserved.</div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="Secure SeekScholarship administrator sign-in and scholarship management dashboard.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg"><title>Admin | SeekScholarship</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-body">
+    <header class="admin-topbar">
+        <a class="admin-brand" href="index.html"><img class="site-logo-full" src="LogPhoto.png" alt=""><span>ADMIN</span></a>
+        <a class="admin-return-link" href="index.html">Return to website</a>
+    </header>
+
+    <main class="admin-shell">
+        <section class="admin-login-panel" id="admin-login-panel" aria-labelledby="admin-login-title">
+            <p class="section-label">RESTRICTED AREA</p>
+            <h1 id="admin-login-title">Admin sign in</h1>
+            <p>Sign in with your invited SeekScholarship admin account to manage listings and countries.</p>
+            <form id="admin-login-form" class="admin-form">
+                <label for="admin-email">Email</label>
+                <input id="admin-email" name="email" type="email" autocomplete="username" required>
+                <label for="admin-password">Password</label>
+                <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
+                <button class="admin-primary-button" type="submit">Sign in</button>
+            </form>
+            <button class="admin-text-button" id="admin-forgot-password" type="button">Forgot password?</button>
+            <p class="admin-message" id="admin-login-message" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="admin-login-panel" id="admin-recovery-panel" aria-labelledby="admin-recovery-title" hidden>
+            <p class="section-label">ACCOUNT RECOVERY</p>
+            <h1 id="admin-recovery-title">Reset your password</h1>
+            <p>Enter your admin email and we’ll send a secure password reset link.</p>
+            <form id="admin-recovery-form" class="admin-form">
+                <label for="admin-recovery-email">Email</label>
+                <input id="admin-recovery-email" name="email" type="email" autocomplete="email" required>
+                <button class="admin-primary-button" type="submit">Send reset link</button>
+            </form>
+            <button class="admin-text-button" id="admin-back-to-login" type="button">Back to sign in</button>
+            <p class="admin-message" id="admin-recovery-message" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="admin-login-panel" id="admin-new-password-panel" aria-labelledby="admin-new-password-title" hidden>
+            <p class="section-label">ACCOUNT RECOVERY</p>
+            <h1 id="admin-new-password-title">Choose a new password</h1>
+            <p>Set a new password for your SeekScholarship admin account.</p>
+            <form id="admin-new-password-form" class="admin-form">
+                <label for="admin-new-password">New password</label>
+                <input id="admin-new-password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+                <label for="admin-confirm-password">Confirm new password</label>
+                <input id="admin-confirm-password" name="confirm-password" type="password" autocomplete="new-password" minlength="8" required>
+                <button class="admin-primary-button" type="submit">Update password</button>
+            </form>
+            <p class="admin-message" id="admin-new-password-message" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="admin-dashboard" id="admin-dashboard" hidden>
+            <div class="admin-dashboard-heading">
+                <div>
+                    <p class="section-label">SeekScholarship MANAGEMENT</p>
+                    <h1>Admin dashboard</h1>
+                    <p id="admin-account-label"></p>
+                </div>
+                <button class="admin-secondary-button" id="admin-signout" type="button">Sign out</button>
+            </div>
+
+            <p class="admin-message" id="admin-global-message" role="status" aria-live="polite"></p>
+
+            <section class="admin-panel" aria-labelledby="scholarship-editor-title">
+                <div class="admin-panel-heading">
+                    <div>
+                        <p class="section-label">LISTINGS</p>
+                        <h2 id="scholarship-editor-title">Add a scholarship</h2>
+                    </div>
+                </div>
+                <form id="scholarship-form" class="admin-form admin-scholarship-form">
+                    <input type="hidden" id="scholarship-record-id">
+                    <label for="admin-scholarship-name">Scholarship name</label>
+                    <input id="admin-scholarship-name" name="name" type="text" maxlength="180" required>
+
+                    <div class="admin-field-row">
+                        <div>
+                            <label for="admin-country">Awarding country</label>
+                            <select id="admin-country" name="country_code"><option value="">Not specified</option></select>
+                            <div class="admin-inline-country" id="admin-inline-country" hidden>
+                                <div class="admin-field-row admin-inline-country-fields">
+                                    <div><label for="inline-country-name">New country name</label><input id="inline-country-name" type="text" maxlength="100" placeholder="Country name"></div>
+                                    <div><label for="inline-country-code">Two-letter code</label><input id="inline-country-code" type="text" maxlength="2" pattern="[A-Za-z]{2}" placeholder="TR"></div>
+                                    <div><label for="inline-country-flag">Flag image (optional)</label><input id="inline-country-flag" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"></div>
+                                </div>
+                                <div class="admin-form-actions"><button class="admin-secondary-button" id="inline-country-save" type="button">Save new country</button><button class="admin-text-button" id="inline-country-cancel" type="button">Cancel</button></div>
+                                <p class="admin-message" id="inline-country-message" role="status" aria-live="polite"></p>
+                            </div>
+                        </div>
+                        <div><label for="admin-degree">Degree level</label><input id="admin-degree" name="degree" type="text" placeholder="Bachelor's, Master's, PhD"></div>
+                        <div><label for="admin-funding">Funding type</label><input id="admin-funding" name="funding" type="text" placeholder="Fully Funded"></div>
+                    </div>
+
+                    <div class="admin-field-row">
+                        <div><label for="admin-field">Field of study</label><input id="admin-field" name="field" type="text"></div>
+                        <div><label for="admin-gender">Gender eligibility</label><input id="admin-gender" name="gender" type="text"></div>
+                        <div><label for="admin-deadline">Deadline</label><input id="admin-deadline" name="deadline" type="date"></div>
+                    </div>
+
+                    <label for="admin-eligible-countries">Eligible countries</label>
+                    <input id="admin-eligible-countries" name="eligible_countries" type="text">
+                    <label for="admin-language">Language requirement</label>
+                    <input id="admin-language" name="language_requirement" type="text">
+
+                    <div class="admin-summary-details-manager">
+                        <div class="admin-panel-heading"><div><p class="section-label">SUMMARY</p><h3>Additional summary details</h3><p>Add any extra label and value to the public summary.</p></div></div>
+                        <div id="admin-summary-details" class="admin-summary-details"></div>
+                        <button class="admin-secondary-button" id="add-summary-detail" type="button">Add Summary Detail</button>
+                    </div>
+
+                    <label for="admin-description-editor">About the scholarship</label>
+                    <div class="admin-rich-editor" data-rich-field="description">
+                        <div class="admin-rich-toolbar" role="toolbar" aria-label="Description formatting">
+                            <button type="button" data-rich-command="bold" aria-label="Bold"><strong>B</strong></button>
+                            <button type="button" data-rich-command="italic" aria-label="Italic"><em>I</em></button>
+                            <button type="button" data-rich-command="heading" aria-label="Heading">H</button>
+                            <button type="button" data-rich-command="unorderedList" aria-label="Bulleted list">• List</button>
+                            <button type="button" data-rich-command="orderedList" aria-label="Numbered list">1. List</button>
+                            <button type="button" data-rich-command="link" aria-label="Insert link">Link</button>
+                            <button type="button" data-rich-command="highlight" aria-label="Highlight selection"><mark>Highlight</mark></button>
+                        </div>
+                        <div id="admin-description-editor" class="admin-rich-content" data-rich-editor="true" contenteditable="true" role="textbox" aria-multiline="true" aria-label="About the scholarship"></div>
+                    </div>
+                    <textarea id="admin-description" name="description" hidden></textarea>
+                    <div class="admin-field-row admin-list-fields">
+                        <div><label for="admin-benefits">Benefits <span>one per line</span></label><textarea id="admin-benefits" name="benefits" rows="5"></textarea></div>
+                        <div><label for="admin-eligibility">Eligibility <span>one per line</span></label><textarea id="admin-eligibility" name="eligibility" rows="5"></textarea></div>
+                        <div><label for="admin-documents">Required documents <span>one per line</span></label><textarea id="admin-documents" name="documents" rows="5"></textarea></div>
+                    </div>
+                    <label for="admin-application-editor">Application instructions</label>
+                    <div class="admin-rich-editor" data-rich-field="application">
+                        <div class="admin-rich-toolbar" role="toolbar" aria-label="Application instructions formatting">
+                            <button type="button" data-rich-command="bold" aria-label="Bold"><strong>B</strong></button>
+                            <button type="button" data-rich-command="italic" aria-label="Italic"><em>I</em></button>
+                            <button type="button" data-rich-command="heading" aria-label="Heading">H</button>
+                            <button type="button" data-rich-command="unorderedList" aria-label="Bulleted list">• List</button>
+                            <button type="button" data-rich-command="orderedList" aria-label="Numbered list">1. List</button>
+                            <button type="button" data-rich-command="link" aria-label="Insert link">Link</button>
+                            <button type="button" data-rich-command="highlight" aria-label="Highlight selection"><mark>Highlight</mark></button>
+                        </div>
+                        <div id="admin-application-editor" class="admin-rich-content" data-rich-editor="true" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Application instructions"></div>
+                    </div>
+                    <textarea id="admin-application" name="application" hidden></textarea>
+
+                    <div class="admin-custom-section-manager">
+                        <div class="admin-panel-heading"><div><p class="section-label">FLEXIBLE CONTENT</p><h3>Custom sections</h3><p>Add, reorder, or remove sections for scholarship-specific information.</p></div></div>
+                        <div id="admin-custom-sections" class="admin-custom-sections"></div>
+                        <button class="admin-secondary-button" id="add-custom-section" type="button">Add Section</button>
+                    </div>
+                    <label for="admin-application-url">Official application URL</label>
+                    <input id="admin-application-url" name="application_url" type="url" placeholder="https://">
+                    <label class="admin-checkbox-label"><input id="admin-is-featured" name="is_featured" type="checkbox"> Show in Featured Scholarships</label>
+                    <div class="admin-field-row admin-save-row">
+                        <div><label for="admin-status">Status</label><select id="admin-status" name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div>
+                        <div class="admin-form-actions"><button class="admin-primary-button" type="submit" id="scholarship-save-button">Save scholarship</button><button class="admin-secondary-button" type="button" id="scholarship-cancel-edit" hidden>Cancel edit</button></div>
+                    </div>
+                    <p class="admin-message" id="scholarship-form-message" role="status" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <section class="admin-panel" aria-labelledby="scholarships-list-title">
+                <div class="admin-panel-heading"><div><p class="section-label">DATABASE</p><h2 id="scholarships-list-title">Manage scholarships</h2></div></div>
+                <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Name</th><th>Country</th><th>Status</th><th>Updated</th><th>Actions</th></tr></thead><tbody id="admin-scholarship-rows"></tbody></table></div>
+            </section>
+
+            <section class="admin-panel" aria-labelledby="countries-manager-title">
+                <div class="admin-panel-heading"><div><p class="section-label">COUNTRIES</p><h2 id="countries-manager-title">Manage countries and flags</h2></div></div>
+                <form id="country-form" class="admin-form admin-country-form">
+                    <input type="hidden" id="editing-country-code">
+                    <div class="admin-field-row">
+                        <div><label for="admin-country-code">Country code</label><input id="admin-country-code" type="text" maxlength="2" pattern="[A-Za-z]{2}" placeholder="TR" required></div>
+                        <div><label for="admin-country-name">Country name</label><input id="admin-country-name" type="text" maxlength="100" required></div>
+                        <div><label for="admin-flag-file">Flag image</label><input id="admin-flag-file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"></div>
+                    </div>
+                    <label class="admin-checkbox-label"><input id="admin-country-active" type="checkbox" checked> Show this country on the website</label>
+                    <div class="admin-form-actions"><button class="admin-primary-button" type="submit" id="country-save-button">Add country</button><button class="admin-secondary-button" type="button" id="country-cancel-edit" hidden>Cancel edit</button></div>
+                    <p class="admin-message" id="country-form-message" role="status" aria-live="polite"></p>
+                </form>
+                <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Flag</th><th>Country</th><th>Code</th><th>Website status</th><th>Action</th></tr></thead><tbody id="admin-country-rows"></tbody></table></div>
+            </section>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.6/dist/purify.min.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
