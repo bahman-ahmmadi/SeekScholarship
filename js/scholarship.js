@@ -53,6 +53,40 @@ function sanitizeScholarshipHTML(value) {
     return safeText.innerHTML;
 }
 
+function setMetaContent(selector, content) {
+    const element = document.querySelector(selector);
+    if (element) element.setAttribute("content", content);
+}
+
+function updateScholarshipMetadata(scholarship) {
+    const title = `${scholarship.name} | SeekScholarship`;
+    const canonicalUrl = `https://seekscholarship.com/scholarship.html?id=${encodeURIComponent(scholarship.databaseId)}`;
+    const descriptionText = document.createElement("div");
+    descriptionText.innerHTML = sanitizeScholarshipHTML(scholarship.description || "");
+    const scholarshipDescription = descriptionText.textContent.replace(/\s+/g, " ").trim();
+    const description = (scholarshipDescription || "Review scholarship funding, eligibility, benefits, deadlines, and application information.").slice(0, 160);
+
+    document.title = title;
+    setMetaContent('meta[name="description"]', description);
+    setMetaContent('meta[property="og:title"]', title);
+    setMetaContent('meta[property="og:description"]', description);
+    let openGraphUrl = document.querySelector('meta[property="og:url"]');
+    if (!openGraphUrl) {
+        openGraphUrl = document.createElement("meta");
+        openGraphUrl.setAttribute("property", "og:url");
+        document.head.appendChild(openGraphUrl);
+    }
+    openGraphUrl.setAttribute("content", canonicalUrl);
+
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+        canonicalLink = document.createElement("link");
+        canonicalLink.rel = "canonical";
+        document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.href = canonicalUrl;
+}
+
 function setOptionalText(selector, value, formatter) {
     const element = document.querySelector(selector);
     const content = value == null ? "" : String(value).trim();
@@ -91,7 +125,7 @@ function renderScholarship(scholarship) {
     document.querySelector(".scholarship-info").hidden = !visibleFacts.some(Boolean);
     setRichSection("#scholarship-description", scholarship.description);
     document.querySelector(".scholarship-extra-details").hidden = true;
-    document.title = `${scholarship.name} | SeekScholarship`;
+    updateScholarshipMetadata(scholarship);
 
     const detailValues = {
         gender: ["#scholarship-gender", scholarship.gender],
