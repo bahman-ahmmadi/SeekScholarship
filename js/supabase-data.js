@@ -4,41 +4,48 @@
         return;
     }
 
-    function normalizeScholarship(row) {
+    function normalizeScholarship(row, includeDetails = false) {
         const country = row.countries || {};
-        return {
+        const scholarship = {
             id: `supabase-${row.id}`,
             databaseId: row.id,
             source: "supabase",
             name: row.name,
             country: country.name || "",
-            countryCode: row.country_code,
             funding: row.funding || "",
             degree: row.degree || "",
             field: row.field || "",
-            gender: row.gender || "",
-            eligibleCountries: row.eligible_countries || "",
-            languageRequirement: row.language_requirement || "",
             deadline: row.deadline || "",
             description: row.description || "",
-            benefits: row.benefits || [],
-            eligibility: row.eligibility || [],
-            documents: row.documents || [],
-            application: row.application || "",
-            customSections: Array.isArray(row.custom_sections) ? row.custom_sections : [],
-            summaryDetails: Array.isArray(row.summary_details) ? row.summary_details : [],
             isFeatured: row.is_featured === true,
-            applicationUrl: row.application_url || "#",
-            status: row.status,
-            createdAt: row.created_at
+            status: row.status || "published"
         };
+
+        if (includeDetails) {
+            Object.assign(scholarship, {
+                countryCode: row.country_code,
+                gender: row.gender || "",
+                eligibleCountries: row.eligible_countries || "",
+                languageRequirement: row.language_requirement || "",
+                benefits: row.benefits || [],
+                eligibility: row.eligibility || [],
+                documents: row.documents || [],
+                application: row.application || "",
+                customSections: Array.isArray(row.custom_sections) ? row.custom_sections : [],
+                summaryDetails: Array.isArray(row.summary_details) ? row.summary_details : [],
+                applicationUrl: row.application_url || "#",
+                createdAt: row.created_at
+            });
+        }
+
+        return scholarship;
     }
 
     window.scholarlyData = {
         async getPublishedScholarships() {
             const { data, error } = await client
                 .from("scholarships")
-                .select("*, countries(code, name, flag_path)")
+                .select("id, name, funding, degree, field, deadline, description, is_featured, countries(name)")
                 .eq("status", "published")
                 .order("created_at", { ascending: false });
 
@@ -55,7 +62,7 @@
                 .maybeSingle();
 
             if (error) throw error;
-            return data ? normalizeScholarship(data) : null;
+            return data ? normalizeScholarship(data, true) : null;
         },
 
         async getCountries() {
