@@ -40,7 +40,6 @@
                 .from("scholarships")
                 .select("*, countries(code, name, flag_path)")
                 .eq("status", "published")
-                .eq("is_featured", true)
                 .order("created_at", { ascending: false });
 
             if (error) throw error;
@@ -53,7 +52,6 @@
                 .select("*, countries(code, name, flag_path)")
                 .eq("id", id)
                 .eq("status", "published")
-                .eq("is_featured", true)
                 .maybeSingle();
 
             if (error) throw error;
