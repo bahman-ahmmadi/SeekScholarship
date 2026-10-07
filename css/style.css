@@ -3412,3 +3412,297 @@ a.logo .site-logo-full {
         width: min(220px, 58vw);
     }
 }
+
+
+/* Accessible mobile navigation and small-screen layout safeguards. */
+.mobile-menu-toggle,
+.nav-category-toggle {
+    display: none;
+}
+
+.nav-disabled-item {
+    display: block;
+    padding: 11px 14px;
+    color: #cbd5e1;
+    cursor: default;
+}
+
+.scholarships-dropdown > .nav-category-toggle {
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.scholarships-dropdown > .nav-category-toggle:focus-visible,
+.mobile-menu-toggle:focus-visible {
+    outline: 2px solid #3986c9;
+    outline-offset: 3px;
+}
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: clip;
+}
+
+@media (max-width: 768px) {
+    nav.site-nav {
+        position: sticky;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 8px 12px;
+        padding: 8px 16px;
+    }
+
+    nav.site-nav a.logo {
+        display: block;
+        flex: 0 1 auto;
+        width: auto;
+        min-width: 0;
+        min-height: 0;
+        max-width: calc(100% - 106px);
+        height: auto;
+    }
+
+    nav.site-nav a.logo .site-logo-full {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .mobile-menu-toggle {
+        display: inline-flex;
+        min-width: 82px;
+        min-height: 44px;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border: 1px solid #bfd3e7;
+        border-radius: 8px;
+        padding: 8px 12px;
+        background: #ffffff;
+        color: #183653;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .mobile-menu-toggle > span:first-child {
+        font-size: 19px;
+        line-height: 1;
+    }
+
+    nav.site-nav .nav-links {
+        display: none;
+        width: 100%;
+        flex: 0 0 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        border-top: 1px solid #d7e2ed;
+        padding: 8px 0 2px;
+    }
+
+    nav.site-nav .nav-links.is-open {
+        display: flex;
+    }
+
+    nav.site-nav .nav-links > a,
+    nav.site-nav .nav-dropdown > .nav-dropdown-title {
+        display: flex;
+        min-height: 44px;
+        align-items: center;
+        padding: 8px 10px;
+        color: #314c69;
+        font-size: 16px;
+        text-decoration: none;
+    }
+
+    nav.site-nav .nav-links > a:focus-visible,
+    nav.site-nav .nav-dropdown > .nav-dropdown-title:focus-visible {
+        border-radius: 6px;
+        outline: 2px solid #3986c9;
+        outline-offset: -2px;
+    }
+
+    nav.site-nav .nav-dropdown {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 44px;
+        align-items: center;
+    }
+
+    nav.site-nav .about-dropdown {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    nav.site-nav .scholarships-dropdown > .nav-category-toggle {
+        display: inline-grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        font-size: 20px;
+    }
+
+    nav.site-nav .dropdown-menu {
+        position: static;
+        grid-column: 1 / -1;
+        min-width: 0;
+        transform: none;
+        border: 0;
+        border-radius: 0;
+        padding: 0 0 6px 12px;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    nav.site-nav .scholarships-dropdown:hover .dropdown-menu,
+    nav.site-nav .scholarships-dropdown:focus-within .dropdown-menu {
+        display: none;
+    }
+
+    nav.site-nav .scholarships-dropdown.is-open .dropdown-menu {
+        display: block;
+    }
+
+    nav.site-nav .about-dropdown .dropdown-menu {
+        display: block;
+        padding-bottom: 4px;
+    }
+
+    nav.site-nav .dropdown-menu a,
+    nav.site-nav .nav-disabled-item {
+        min-height: 44px;
+        padding: 10px 14px;
+        color: #415a75;
+        font-size: 15px;
+        white-space: normal;
+    }
+
+    .hero {
+        min-height: 500px;
+        padding: 76px 20px 70px;
+    }
+
+    .hero h1,
+    .scholarships-page > .page-header h1,
+    .countries-page > .page-header h1 {
+        overflow-wrap: anywhere;
+    }
+
+    .scholarship-page,
+    .scholarship-grid,
+    .countries-grid,
+    .contact-section,
+    .site-footer-inner {
+        min-width: 0;
+    }
+
+    .scholarship-grid,
+    .countries-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .scholarship-card,
+    .country-card,
+    .degree-card {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .site-footer-inner {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 28px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero {
+        min-height: 470px;
+        padding: 66px 18px 58px;
+    }
+
+    .hero h1 {
+        font-size: clamp(32px, 9vw, 39px);
+        letter-spacing: -1.2px;
+    }
+
+    .hero-description,
+    .page-header p,
+    .page-intro {
+        font-size: 16px;
+    }
+
+    .home-search,
+    .scholarship-search-row,
+    .scholarship-filter-row,
+    .scholarship-grid,
+    .countries-grid,
+    .degree-grid,
+    .scholarship-info,
+    .scholarship-detail-list,
+    .team-member-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .home-search {
+        gap: 10px;
+    }
+
+    .search-divider {
+        padding: 1px 0;
+    }
+
+    .scholarships-page > .page-header,
+    .countries-page > .page-header {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+
+    .scholarship-page {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+
+    .scholarship-card,
+    .country-card,
+    .degree-card,
+    .details-section,
+    .contact-aside,
+    .contact-form-column {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+
+    .contact-section {
+        gap: 18px;
+        padding: 14px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    #contact-form button,
+    .apply-button,
+    .clear-filters {
+        min-height: 48px;
+    }
+
+    .site-footer-inner {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 24px;
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+
+    .site-footer-brand .footer-site-logo-full {
+        width: min(280px, 100%);
+    }
+
+    .site-footer-bottom {
+        padding-right: 16px;
+        padding-left: 16px;
+        text-align: center;
+    }
+}

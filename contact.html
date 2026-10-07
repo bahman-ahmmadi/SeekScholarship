@@ -22,27 +22,27 @@
 
 <body>
 
-    <nav>
-        <a class="logo" href="index.html" aria-label="SeekScholarship home"><img class="site-logo-full" src="LogPhoto.png" alt=""></a>
-
-        <div class="nav-links">
+    <nav class="site-nav" aria-label="Main navigation">
+        <a class="logo" href="index.html" aria-label="SeekScholarship home"><img class="site-logo-full" src="LogPhoto.webp" alt="SeekScholarship" width="560" height="203"></a>
+        <button class="mobile-menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" aria-label="Open navigation menu"><span aria-hidden="true">☰</span><span>Menu</span></button>
+        <div class="nav-links" id="site-navigation">
             <a href="index.html">Home</a>
-        <div class="nav-dropdown">
-            <a href="scholarships.html" class="nav-dropdown-title">Scholarships</a>
-
-            <div class="dropdown-menu">
-                <a href="scholarships.html?degree=high-school">High School Scholarships</a>
-                <a href="scholarships.html?degree=bachelor">Bachelor Scholarships</a>
-                <a href="scholarships.html?degree=master">Master Scholarships</a>
-                <a href="scholarships.html?degree=phd">PhD Scholarships</a>
+            <div class="nav-dropdown scholarships-dropdown">
+                <a href="scholarships.html" class="nav-dropdown-title">Scholarships</a>
+                <button class="nav-category-toggle" type="button" aria-controls="scholarship-category-menu" aria-expanded="false" aria-label="Show scholarship categories"><span aria-hidden="true">⌄</span></button>
+                <div class="dropdown-menu" id="scholarship-category-menu">
+                    <a href="scholarships.html?degree=high-school">High School Scholarships</a>
+                    <a href="scholarships.html?degree=bachelor">Bachelor Scholarships</a>
+                    <a href="scholarships.html?degree=master">Master Scholarships</a>
+                    <a href="scholarships.html?degree=phd">PhD Scholarships</a>
+                </div>
             </div>
-        </div>
             <a href="countries.html">Countries</a>
-<div class="nav-dropdown about-dropdown">
-                <span class="nav-dropdown-title" tabindex="0">About</span>
+            <div class="nav-dropdown about-dropdown">
+                <span class="nav-dropdown-title" tabindex="0" aria-disabled="true">About</span>
                 <div class="dropdown-menu">
-                    <a href="about.html">About SeekScholarship</a>
-                    <a href="team.html">Our Team</a>
+                    <span class="nav-disabled-item" aria-disabled="true">About SeekScholarship</span>
+                    <span class="nav-disabled-item" aria-disabled="true">Our Team</span>
                 </div>
             </div>
             <a href="contact.html">Contact</a>
@@ -108,7 +108,7 @@
     <footer class="site-footer">
         <div class="site-footer-inner">
             <section class="site-footer-brand" aria-labelledby="footer-brand-title">
-                <h2 id="footer-brand-title"><img class="footer-site-logo-full" src="LogPhoto.png" alt="SeekScholarship" width="280" height="101" loading="lazy" decoding="async"></h2>
+                <h2 id="footer-brand-title"><img class="footer-site-logo-full" src="LogPhoto.webp" alt="SeekScholarship" width="280" height="101" loading="lazy" decoding="async"></h2>
                 <p>Explore study funding opportunities and take your next step toward an education abroad.</p>
             </section>
             <section aria-labelledby="footer-info-title">
@@ -126,5 +126,6 @@
         </div>
         <div class="site-footer-bottom">© 2026 SeekScholarship. All rights reserved.</div>
     </footer>
+<script src="js/navigation.js"></script>
 </body>
 </html>
