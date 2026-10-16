@@ -375,9 +375,7 @@ function loadAllScholarships() {
 
     scholarshipLoadState = "loading";
     displayScholarshipLoading();
-    allScholarshipsPromise = window.scholarlyData.getPublishedScholarships({
-        includeDescription: isHomePage
-    })
+    allScholarshipsPromise = window.scholarlyData.getPublishedScholarships()
         .then(function (remoteScholarships) {
             allScholarships = remoteScholarships;
             allScholarshipsLoaded = true;
