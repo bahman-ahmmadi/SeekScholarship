@@ -25,6 +25,8 @@
                 <input id="admin-email" name="email" type="email" autocomplete="username" required>
                 <label for="admin-password">Password</label>
                 <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
+                <label class="admin-checkbox-label"><input id="admin-remember-me" name="remember-me" type="checkbox"> Remember me on this device</label>
+                <p>Use this option only on a private device. Otherwise, sign-in lasts for this tab only.</p>
                 <button class="admin-primary-button" type="submit">Sign in</button>
             </form>
             <button class="admin-text-button" id="admin-forgot-password" type="button">Forgot password?</button>
@@ -191,7 +193,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js"></script>
+    <script data-admin-auth="true" src="js/supabase-client.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.6/dist/purify.min.js"></script>
     <script src="js/admin.js"></script>
 </body>

@@ -1,0 +1,13 @@
+/admin
+  Cache-Control: no-store
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' https://nrmfmvpjfmimiaemlmcd.supabase.co data:; connect-src 'self' https://nrmfmvpjfmimiaemlmcd.supabase.co wss://nrmfmvpjfmimiaemlmcd.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+/admin.html
+  Cache-Control: no-store
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' https://nrmfmvpjfmimiaemlmcd.supabase.co data:; connect-src 'self' https://nrmfmvpjfmimiaemlmcd.supabase.co wss://nrmfmvpjfmimiaemlmcd.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'

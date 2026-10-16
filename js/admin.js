@@ -24,6 +24,7 @@
     const inlineCountryMessage = document.querySelector("#inline-country-message");
 
     let currentAdmin = null;
+    let authEpoch = 0;
     let pendingAdminUserId = "";
     let pendingAdminVerification = null;
     let countries = [];
@@ -38,12 +39,45 @@
         element.classList.toggle("is-success", Boolean(message) && !isError);
     }
 
+    function clearAdminState() {
+        authEpoch += 1;
+        currentAdmin = null;
+        pendingAdminUserId = "";
+        pendingAdminVerification = null;
+        countries = [];
+        scholarships = [];
+        scholarshipRows.replaceChildren();
+        countryRows.replaceChildren();
+        document.querySelector("#admin-account-label").textContent = "";
+        document.querySelector("#admin-password").value = "";
+        document.querySelector("#admin-new-password").value = "";
+        document.querySelector("#admin-confirm-password").value = "";
+        scholarshipForm.reset();
+        scholarshipForm.querySelectorAll("[data-rich-editor]").forEach(function (editor) { editor.textContent = ""; });
+        customSectionsContainer.replaceChildren();
+        summaryDetailsContainer.replaceChildren();
+        countryForm.reset();
+        editingCountryCode = "";
+        lastCountrySelection = "";
+        document.querySelector("#editing-country-code").value = "";
+        document.querySelector("#admin-country-code").disabled = false;
+        document.querySelector("#country-save-button").textContent = "Add country";
+        document.querySelector("#country-cancel-edit").hidden = true;
+        document.querySelector("#scholarship-record-id").value = "";
+        document.querySelector("#scholarship-editor-title").textContent = "Add a scholarship";
+        document.querySelector("#scholarship-save-button").textContent = "Save scholarship";
+        document.querySelector("#scholarship-cancel-edit").hidden = true;
+        inlineCountryPanel.hidden = true;
+    }
+
     function setAuthenticatedView(isAuthenticated) {
+        if (!isAuthenticated) clearAdminState();
         loginPanel.hidden = isAuthenticated;
         dashboard.hidden = !isAuthenticated;
     }
 
     function showLoginView() {
+        clearAdminState();
         loginPanel.hidden = false;
         recoveryPanel.hidden = true;
         newPasswordPanel.hidden = true;
@@ -52,7 +86,9 @@
 
     async function showPasswordUpdate(session) {
         if (!session || !session.user) return false;
+        const epoch = authEpoch;
         const { data: allowed, error } = await client.rpc("is_admin");
+        if (epoch !== authEpoch) return false;
         if (error) {
             showLoginView();
             setMessage(loginMessage, "Could not verify admin access right now. Your session is still saved; reload this page to try again.", true);
@@ -334,12 +370,13 @@
         if (currentAdmin && currentAdmin.id === session.user.id && !dashboard.hidden) return true;
         if (pendingAdminUserId === session.user.id && pendingAdminVerification) return pendingAdminVerification;
 
+        const epoch = authEpoch;
         pendingAdminUserId = session.user.id;
         pendingAdminVerification = verifyAdminAccess(session);
         try {
             return await pendingAdminVerification;
         } finally {
-            if (pendingAdminUserId === session.user.id) {
+            if (epoch === authEpoch && pendingAdminUserId === session.user.id) {
                 pendingAdminUserId = "";
                 pendingAdminVerification = null;
             }
@@ -347,8 +384,9 @@
     }
 
     async function verifyAdminAccess(session) {
-
+        const epoch = authEpoch;
         const { data: allowed, error } = await client.rpc("is_admin");
+        if (epoch !== authEpoch) return false;
         if (error) {
             currentAdmin = null;
             setAuthenticatedView(false);
@@ -363,6 +401,7 @@
             return false;
         }
 
+        if (passwordRecoveryMode) return false;
         currentAdmin = session.user;
         document.querySelector("#admin-account-label").textContent = session.user.email || "Signed in as admin";
         setMessage(loginMessage, "", false);
@@ -450,6 +489,8 @@
     }
 
     async function loadDashboardData() {
+        const epoch = authEpoch;
+        if (!currentAdmin) return false;
         setMessage(globalMessage, "Loading records...", false);
         try {
             const [countryResult, scholarshipResult] = await Promise.all([
@@ -457,6 +498,7 @@
                 client.from("scholarships").select("*").order("updated_at", { ascending: false })
             ]);
 
+            if (epoch !== authEpoch || !currentAdmin) return false;
             if (countryResult.error || scholarshipResult.error) {
                 const error = countryResult.error || scholarshipResult.error;
                 setMessage(globalMessage, `Could not load admin data: ${error.message}`, true);
@@ -758,6 +800,7 @@
             const email = document.querySelector("#admin-email").value.trim();
             const password = document.querySelector("#admin-password").value;
             try {
+                window.scholarlySetAdminRemember(document.querySelector("#admin-remember-me").checked);
                 const { data, error } = await client.auth.signInWithPassword({ email, password });
                 if (error) throw error;
                 setMessage(loginMessage, "Checking admin access...", false);
@@ -765,6 +808,7 @@
             } catch (error) {
                 setMessage(loginMessage, "Sign-in failed. Check your email and password, then try again.", true);
             } finally {
+                document.querySelector("#admin-password").value = "";
                 submit.disabled = false;
             }
         });
@@ -785,13 +829,15 @@
             button.disabled = true;
             setMessage(recoveryMessage, "Sending reset link…", false);
             const redirectTo = new URL("admin.html?mode=recovery", window.location.href).href;
-            const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: redirectTo });
-            button.disabled = false;
-            if (error) {
-                setMessage(recoveryMessage, `We could not send a reset email: ${error.message}`, true);
-                return;
+            try {
+                const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo });
+                if (error) throw error;
+                setMessage(recoveryMessage, "If an account exists for that address, a password reset link has been sent.", false);
+            } catch (_) {
+                setMessage(recoveryMessage, "We could not send a reset email. Please try again later.", true);
+            } finally {
+                button.disabled = false;
             }
-            setMessage(recoveryMessage, "If an account exists for that address, a password reset link has been sent.", false);
         });
 
         newPasswordForm.addEventListener("submit", async function (event) {
@@ -806,40 +852,58 @@
             const button = newPasswordForm.querySelector("button[type='submit']");
             button.disabled = true;
             setMessage(newPasswordMessage, "Updating your password…", false);
-            const { error } = await client.auth.updateUser({ password: password });
-            button.disabled = false;
-            if (error) {
-                setMessage(newPasswordMessage, "Could not update the password. The reset link may have expired; request a new one and try again.", true);
-                return;
+            try {
+                const { error } = await client.auth.updateUser({ password });
+                if (error) throw error;
+                passwordRecoveryMode = false;
+                const { error: signOutError } = await client.auth.signOut({ scope: "local" });
+                showLoginView();
+                setMessage(loginMessage, signOutError
+                    ? "Password updated, but sign-out failed. Reload and sign out again."
+                    : "Password updated. Sign in with your new password.", Boolean(signOutError));
+            } catch (_) {
+                setMessage(newPasswordMessage, "Could not complete the password reset. Request a new reset email if the link expired.", true);
+            } finally {
+                document.querySelector("#admin-new-password").value = "";
+                document.querySelector("#admin-confirm-password").value = "";
+                button.disabled = false;
             }
-
-            passwordRecoveryMode = false;
-            await client.auth.signOut({ scope: "local" });
-            showLoginView();
-            setMessage(loginMessage, "Password updated. Sign in with your new password.", false);
         });
 
         client.auth.onAuthStateChange(function (event, session) {
+            if (event === "SIGNED_OUT") {
+                passwordRecoveryMode = false;
+                showLoginView();
+                return;
+            }
+            if (event === "PASSWORD_RECOVERY") passwordRecoveryMode = true;
+            const eventEpoch = authEpoch;
             window.setTimeout(function () {
-                if (event === "SIGNED_OUT") {
-                    currentAdmin = null;
-                    if (passwordRecoveryMode) showLoginView();
-                    else setAuthenticatedView(false);
-                } else if (event === "PASSWORD_RECOVERY" && session) {
-                    showPasswordUpdate(session);
+                if (eventEpoch !== authEpoch) return;
+                if (event === "PASSWORD_RECOVERY" && session) {
+                    showPasswordUpdate(session).catch(function () {
+                        showLoginView();
+                        setMessage(loginMessage, "Could not verify the reset link. Please try again.", true);
+                    });
                 } else if (session && (event === "SIGNED_IN" || event === "USER_UPDATED")) {
-                    verifyAdmin(session);
+                    if (!passwordRecoveryMode) verifyAdmin(session).catch(function () {
+                        showLoginView();
+                        setMessage(loginMessage, "Could not verify admin access. Please sign in again.", true);
+                    });
                 }
             }, 0);
         });
 
+        const restoreEpoch = authEpoch;
         const { data, error } = await client.auth.getSession();
         if (error) {
             setMessage(loginMessage, "Could not restore your admin session. Sign in again.", true);
             return;
         }
         const isRecoveryReturn = passwordRecoveryMode && data.session;
-        if (isRecoveryReturn) {
+        if (restoreEpoch !== authEpoch) {
+            // A newer login/logout action superseded this stored-session lookup.
+        } else if (isRecoveryReturn) {
             await showPasswordUpdate(data.session);
         } else if (data.session) {
             await verifyAdmin(data.session);
@@ -849,9 +913,15 @@
         }
 
         document.querySelector("#admin-signout").addEventListener("click", async function () {
-            await client.auth.signOut({ scope: "local" });
-            setAuthenticatedView(false);
-            setMessage(loginMessage, "You have signed out.", false);
+            passwordRecoveryMode = false;
+            showLoginView();
+            try {
+                const { error } = await client.auth.signOut({ scope: "local" });
+                if (error) throw error;
+                setMessage(loginMessage, "You have signed out.", false);
+            } catch (_) {
+                setMessage(loginMessage, "Could not complete sign-out. Reload and try again.", true);
+            }
         });
         scholarshipForm.addEventListener("submit", saveScholarship);
         setupRichEditors(scholarshipForm);
@@ -923,5 +993,8 @@
         });
     }
 
-    start();
+    start().catch(function () {
+        showLoginView();
+        setMessage(loginMessage, "Could not initialize admin sign-in. Reload and try again.", true);
+    });
 })();
