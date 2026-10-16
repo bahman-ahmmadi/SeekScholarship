@@ -419,7 +419,7 @@ function loadHomeFeaturedScholarships() {
     }
 
     scholarshipLoadState = "loading";
-    displayScholarshipLoading();
+    if (!scholarshipGrid?.hasAttribute("data-featured-rendered")) displayScholarshipLoading();
     featuredScholarshipsPromise = window.scholarlyData.getFeaturedScholarships()
         .then(function (remoteScholarships) {
             featuredScholarships = remoteScholarships;

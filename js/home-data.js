@@ -44,6 +44,13 @@
 
     window.scholarlyData = {
         async getFeaturedScholarships() {
+            const embedded = document.getElementById("featured-scholarships-data");
+            if (embedded) {
+                try {
+                    const rows = JSON.parse(embedded.textContent);
+                    if (Array.isArray(rows)) return rows.map(normalize);
+                } catch (_) { /* Keep the network fallback for invalid embedded data. */ }
+            }
             try {
                 const cached = JSON.parse(sessionStorage.getItem(cacheKey));
                 const age = Date.now() - cached?.savedAt;

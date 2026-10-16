@@ -1,3 +1,5 @@
+import { serveFeaturedHome } from "./featured-home.js";
+
 const STATIC_PUBLIC_URLS = [
     "https://seekscholarship.com/",
     "https://seekscholarship.com/scholarships.html",
@@ -100,8 +102,12 @@ function sitemapErrorResponse() {
 }
 
 export default {
-    async fetch(request, env) {
+    async fetch(request, env, ctx) {
         const url = new URL(request.url);
+
+        if ((url.pathname === "/" || url.pathname === "/index.html") && request.method === "GET") {
+            return serveFeaturedHome(request, env, ctx);
+        }
 
         if (url.pathname !== "/sitemap.xml") {
             return env.ASSETS.fetch(request);

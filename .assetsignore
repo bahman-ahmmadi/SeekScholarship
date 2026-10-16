@@ -23,3 +23,5 @@ package*.json
 README*
 AGENTS.md
 sitemap.xml
+
+featured-home.js
