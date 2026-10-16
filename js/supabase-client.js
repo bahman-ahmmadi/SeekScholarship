@@ -2,6 +2,9 @@
     const projectUrl = "https://nrmfmvpjfmimiaemlmcd.supabase.co";
     const publishableKey = "sb_publishable_ip_vW1wIEqyiJtivtIyTsA_vXZLXcNI";
 
+    window.scholarlyPublicConfig = { projectUrl, publishableKey };
+    if (document.currentScript?.dataset.restOnly === "true") return;
+
     if (!window.supabase || typeof window.supabase.createClient !== "function") {
         window.scholarlySupabase = null;
         window.scholarlySupabaseError = "The Supabase client could not be loaded. Check your internet connection and reload the page.";
