@@ -55,10 +55,14 @@
             return (data || []).map(normalizeScholarship);
         },
 
-        async getPublishedScholarships() {
+        async getPublishedScholarships(options = {}) {
+            const listingColumns = "id, name, funding, degree, field, deadline, is_featured, countries(name)";
+            const searchColumns = options.includeDescription
+                ? "id, name, funding, degree, field, deadline, description, is_featured, countries(name)"
+                : listingColumns;
             const { data, error } = await client
                 .from("scholarships")
-                .select("id, name, funding, degree, field, deadline, description, is_featured, countries(name)")
+                .select(searchColumns)
                 .eq("status", "published")
                 .order("created_at", { ascending: false });
 
