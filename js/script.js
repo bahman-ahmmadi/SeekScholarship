@@ -10,7 +10,7 @@ let selectedCountry = urlParams.get("country");
 let selectedDegree = urlParams.get("degree");
 
 const scholarshipGrid = document.querySelector("#scholarship-grid");
-const isScholarshipsPage = window.location.pathname.includes("scholarships.html");
+const isScholarshipsPage = Boolean(document.querySelector(".scholarships-page") && scholarshipGrid);
 const isHomePage = Boolean(document.querySelector(".home-results") && scholarshipGrid);
 let allScholarships = [];
 let featuredScholarships = [];
