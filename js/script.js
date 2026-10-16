@@ -11,10 +11,15 @@ let selectedDegree = urlParams.get("degree");
 
 const scholarshipGrid = document.querySelector("#scholarship-grid");
 const isScholarshipsPage = window.location.pathname.includes("scholarships.html");
+const isHomePage = Boolean(document.querySelector(".home-results") && scholarshipGrid);
 let allScholarships = [];
+let featuredScholarships = [];
 let activeCountries = [];
 let scholarshipLoadState = "loading";
-let scholarshipLoadPromise = null;
+let allScholarshipsPromise = null;
+let featuredScholarshipsPromise = null;
+let allScholarshipsLoaded = false;
+let featuredScholarshipsLoaded = false;
 let countriesLoadPromise = null;
 let countriesLoaded = false;
 
@@ -147,6 +152,51 @@ function updateSearchViewState() {
     document.body.classList.toggle("has-active-scholarship-filter", hasActiveFilter);
 }
 
+function normalizeFilterValue(value) {
+    return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+}
+
+function normalizeCountryFilter(value) {
+    const normalized = normalizeFilterValue(value);
+    const aliases = {
+        turkiye: "turkey",
+        "united states of america": "united states",
+        usa: "united states",
+        us: "united states",
+        uk: "united kingdom",
+        "great britain": "united kingdom"
+    };
+    return aliases[normalized] || normalized;
+}
+
+function matchesDegreeFilter(scholarshipDegree, selectedDegreeValue) {
+    const selected = normalizeFilterValue(selectedDegreeValue);
+    if (!selected) return true;
+
+    const patterns = {
+        "high school": /\b(high school|secondary|pre university)\b/,
+        bachelor: /\b(bachelors?|undergraduate)\b/,
+        master: /\b(masters?|graduate|postgraduate)\b/,
+        phd: /\b(phd|ph d|doctoral|doctorate)\b/
+    };
+    const pattern = patterns[selected];
+    const scholarshipValue = normalizeFilterValue(scholarshipDegree);
+    return pattern ? pattern.test(scholarshipValue) : scholarshipValue === selected;
+}
+
+function hasHomeSearchFilters() {
+    return Boolean(
+        (searchInput && searchInput.value.trim()) ||
+        (countrySearch && countrySearch.value) ||
+        selectedCountry
+    );
+}
+
 
 function filterScholarships() {
 
@@ -186,11 +236,9 @@ function filterScholarships() {
 
         const matchesCountry =
             country === "" ||
-            scholarship.country === country;
+            normalizeCountryFilter(scholarship.country) === normalizeCountryFilter(country);
 
-        const matchesSelectedDegree =
-            degree === "" ||
-            scholarship.degree.toLowerCase().includes(degree.toLowerCase());
+        const matchesSelectedDegree = matchesDegreeFilter(scholarship.degree, degree);
 
         return matchesSearch && matchesCountry && matchesSelectedDegree;
     });
@@ -222,7 +270,7 @@ function filterHomeScholarships() {
         const matchesSearch = searchableText.includes(searchText);
         const matchesCountry =
             selectedHomeCountry === "" ||
-            scholarship.country === selectedHomeCountry;
+            normalizeCountryFilter(scholarship.country) === normalizeCountryFilter(selectedHomeCountry);
 
         return matchesSearch && matchesCountry;
     });
@@ -234,16 +282,17 @@ function populateCountryFilters() {
     [scholarshipCountry, countrySearch].filter(Boolean).forEach(function (select) {
         activeCountries.forEach(function (country) {
             const exists = Array.from(select.options).some(function (option) {
-                return option.value === country.name;
+                return normalizeCountryFilter(option.value) === normalizeCountryFilter(country.name);
             });
             if (!exists) {
                 select.add(new Option(country.name, country.name));
             }
         });
-        if (selectedCountry && Array.from(select.options).some(function (option) {
-            return option.value === selectedCountry;
-        })) {
-            select.value = selectedCountry;
+        if (selectedCountry) {
+            const matchingOption = Array.from(select.options).find(function (option) {
+                return normalizeCountryFilter(option.value) === normalizeCountryFilter(selectedCountry);
+            });
+            if (matchingOption) select.value = matchingOption.value;
         }
     });
 }
@@ -286,11 +335,13 @@ function updateCountryCards() {
 function renderCurrentScholarships() {
     if (!scholarshipGrid) return;
     if (isScholarshipsPage) {
-        filterScholarships();
-    } else if ((searchInput && searchInput.value.trim()) || (countrySearch && countrySearch.value) || selectedCountry) {
-        filterHomeScholarships();
-    } else {
-        displayScholarships(allScholarships.filter(function (scholarship) { return scholarship.isFeatured; }).slice(0, 3));
+        if (allScholarshipsLoaded) filterScholarships();
+    } else if (isHomePage) {
+        if (hasHomeSearchFilters()) {
+            if (allScholarshipsLoaded) filterHomeScholarships();
+        } else if (featuredScholarshipsLoaded) {
+            displayScholarships(featuredScholarships.slice(0, 3));
+        }
     }
 }
 
@@ -312,49 +363,137 @@ function loadCountriesOnce() {
     return countriesLoadPromise;
 }
 
-function loadSupabaseContent() {
-    if (scholarshipLoadPromise) return scholarshipLoadPromise;
-    if (scholarshipLoadState === "loaded") return Promise.resolve();
+function loadAllScholarships() {
+    if (allScholarshipsLoaded) return Promise.resolve(allScholarships);
+    if (allScholarshipsPromise) return allScholarshipsPromise;
+
+    if (!window.scholarlyData) {
+        scholarshipLoadState = "error";
+        displayScholarshipLoadError();
+        return Promise.resolve([]);
+    }
 
     scholarshipLoadState = "loading";
     displayScholarshipLoading();
+    allScholarshipsPromise = window.scholarlyData.getPublishedScholarships()
+        .then(function (remoteScholarships) {
+            allScholarships = remoteScholarships;
+            allScholarshipsLoaded = true;
+            if (!featuredScholarshipsLoaded) {
+                featuredScholarships = allScholarships.filter(function (item) { return item.isFeatured; }).slice(0, 3);
+                featuredScholarshipsLoaded = true;
+            }
+            scholarshipLoadState = "loaded";
+            updateCountryCards();
+            renderCurrentScholarships();
+            return allScholarships;
+        })
+        .catch(function (error) {
+            console.error("Could not load published Supabase scholarships:", error.message);
+            if (isHomePage && !hasHomeSearchFilters() && featuredScholarshipsLoaded) {
+                scholarshipLoadState = "loaded";
+                displayScholarships(featuredScholarships.slice(0, 3));
+            } else {
+                scholarshipLoadState = "error";
+                displayScholarshipLoadError();
+            }
+            return [];
+        })
+        .finally(function () {
+            allScholarshipsPromise = null;
+        });
+    return allScholarshipsPromise;
+}
 
+function loadHomeFeaturedScholarships() {
+    if (featuredScholarshipsLoaded) {
+        renderCurrentScholarships();
+        return Promise.resolve(featuredScholarships);
+    }
+    if (featuredScholarshipsPromise) return featuredScholarshipsPromise;
+
+    if (!window.scholarlyData || typeof window.scholarlyData.getFeaturedScholarships !== "function") {
+        scholarshipLoadState = "error";
+        displayScholarshipLoadError();
+        return Promise.resolve([]);
+    }
+
+    scholarshipLoadState = "loading";
+    displayScholarshipLoading();
+    featuredScholarshipsPromise = window.scholarlyData.getFeaturedScholarships()
+        .then(function (remoteScholarships) {
+            featuredScholarships = remoteScholarships;
+            featuredScholarshipsLoaded = true;
+            if (!hasHomeSearchFilters() && !allScholarshipsPromise) {
+                scholarshipLoadState = "loaded";
+                renderCurrentScholarships();
+            } else if (allScholarshipsLoaded) {
+                scholarshipLoadState = "loaded";
+                renderCurrentScholarships();
+            }
+            return featuredScholarships;
+        })
+        .catch(function (error) {
+            console.error("Could not load featured Supabase scholarships:", error.message);
+            if (!allScholarshipsLoaded && !allScholarshipsPromise) {
+                scholarshipLoadState = "error";
+                displayScholarshipLoadError();
+            } else if (allScholarshipsLoaded) {
+                scholarshipLoadState = "loaded";
+                renderCurrentScholarships();
+            }
+            return [];
+        })
+        .finally(function () {
+            featuredScholarshipsPromise = null;
+        });
+    return featuredScholarshipsPromise;
+}
+
+function handleHomeFilterChange() {
+    updateSearchViewState();
+    if (!hasHomeSearchFilters()) {
+        renderCurrentScholarships();
+        return;
+    }
+    if (!allScholarshipsLoaded) {
+        loadAllScholarships();
+        return;
+    }
+    filterHomeScholarships();
+}
+
+function loadSupabaseContent() {
     if (!window.scholarlyData) {
         scholarshipLoadState = "error";
         displayScholarshipLoadError();
         return Promise.resolve();
     }
 
-    loadCountriesOnce();
-    scholarshipLoadPromise = window.scholarlyData.getPublishedScholarships()
-        .then(function (remoteScholarships) {
-            allScholarships = remoteScholarships;
-            scholarshipLoadState = "loaded";
-            updateCountryCards();
-            renderCurrentScholarships();
-        })
-        .catch(function (error) {
-            console.error("Could not load published Supabase scholarships:", error.message);
-            scholarshipLoadState = "error";
-            displayScholarshipLoadError();
-        })
-        .finally(function () {
-            scholarshipLoadPromise = null;
-        });
-    return scholarshipLoadPromise;
+    if (isHomePage) {
+        loadCountriesOnce();
+        return hasHomeSearchFilters() ? loadAllScholarships() : loadHomeFeaturedScholarships();
+    }
+
+    if (isScholarshipsPage || document.querySelector(".countries-grid")) {
+        loadCountriesOnce();
+        return loadAllScholarships();
+    }
+
+    return Promise.resolve();
 }
 
 loadSupabaseContent();
 
 if (searchInput) {
-    searchInput.addEventListener("input", filterHomeScholarships);
+    searchInput.addEventListener("input", handleHomeFilterChange);
 }
 
 if (countrySearch) {
     countrySearch.addEventListener("change", function () {
         selectedCountry = "";
         removePresetFilterFromUrl("country");
-        filterHomeScholarships();
+        handleHomeFilterChange();
     });
 }
 

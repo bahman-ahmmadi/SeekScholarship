@@ -42,6 +42,19 @@
     }
 
     window.scholarlyData = {
+        async getFeaturedScholarships() {
+            const { data, error } = await client
+                .from("scholarships")
+                .select("id, name, funding, deadline, is_featured, countries(name)")
+                .eq("status", "published")
+                .eq("is_featured", true)
+                .order("created_at", { ascending: false })
+                .limit(3);
+
+            if (error) throw error;
+            return (data || []).map(normalizeScholarship);
+        },
+
         async getPublishedScholarships() {
             const { data, error } = await client
                 .from("scholarships")
