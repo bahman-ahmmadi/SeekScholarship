@@ -1,4 +1,5 @@
 import { serveFeaturedHome } from "./featured-home.js";
+import { handleTelegramWebhook } from "./telegram-assistant.js";
 
 const STATIC_PUBLIC_URLS = [
     "https://seekscholarship.com/",
@@ -104,6 +105,10 @@ function sitemapErrorResponse() {
 export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
+
+        if (url.pathname === "/telegram/webhook") {
+            return handleTelegramWebhook(request, env);
+        }
 
         if ((url.pathname === "/" || url.pathname === "/index.html") && request.method === "GET") {
             return serveFeaturedHome(request, env, ctx);
