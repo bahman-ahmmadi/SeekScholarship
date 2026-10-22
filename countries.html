@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -49,58 +49,19 @@
 
     <main class="countries-page">
 
-        <section class="page-header countries-hero">
-            <h1>Explore Scholarships by Country</h1>
-            <p>
-                Find scholarship opportunities available in countries
-                around the world.
-            </p>
+        <section class="countries-intro" aria-labelledby="countries-title">
+            <p class="section-label">STUDY ABROAD</p>
+            <h1 id="countries-title">Explore Scholarships by Country</h1>
         </section>
-
-        <section class="countries-browse-heading" aria-labelledby="countries-browse-title">
-            <h2 id="countries-browse-title">Choose a country to explore scholarships</h2>
-            <p>Select a destination to see the opportunities available there.</p>
+        <section class="countries-grid" aria-label="Countries with scholarships" aria-busy="true">
+            <p class="countries-status" role="status">Loading destinations…</p>
         </section>
-
-        <section class="countries-grid">
-
-            <a href="scholarships?country=Turkey" class="country-card" data-country="Turkey">
-                <h2><img class="country-flag" src="images/flags/turkey.svg" alt="">Turkey</h2>
-                <p class="country-scholarship-count"></p>
-            </a>
-
-            <a href="scholarships?country=Canada" class="country-card" data-country="Canada">
-                <h2><img class="country-flag" src="images/flags/canada.svg" alt="">Canada</h2>
-                <p class="country-scholarship-count"></p>
-            </a>
-
-            <a href="scholarships?country=United States" class="country-card" data-country="United States">
-                <h2><img class="country-flag" src="images/flags/united-states.svg" alt="">United States</h2>
-                <p class="country-scholarship-count"></p>
-            </a>
-
-            <a href="scholarships?country=United Kingdom" class="country-card" data-country="United Kingdom">
-                <h2><img class="country-flag" src="images/flags/united-kingdom.svg" alt="">United Kingdom</h2>
-                <p class="country-scholarship-count"></p>
-            </a>
-
-            <a href="scholarships?country=Germany" class="country-card" data-country="Germany">
-                <h2><img class="country-flag" src="images/flags/germany.svg" alt="">Germany</h2>
-                <p class="country-scholarship-count"></p>
-            </a>
-
-            <a href="scholarships?country=Italy" class="country-card" data-country="Italy">
-                <h2><img class="country-flag" src="images/flags/italy.svg" alt="">Italy</h2>
-                <p class="country-scholarship-count"></p>
-            </a>
-
-        </section>
+        <noscript><p class="countries-status">Enable JavaScript to browse countries, or <a href="scholarships">view all scholarships</a>.</p></noscript>
 
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/supabase-data.js"></script>
+    <script src="js/supabase-client.js" data-rest-only="true"></script>
+    <script src="js/home-data.js"></script>
     <script src="js/script.js"></script>
 
     <footer class="site-footer">
@@ -114,7 +75,11 @@
                 <p>Scholarship details can change. SeekScholarship is an independent discovery resource and is not a scholarship provider. Confirm eligibility, deadlines, and application instructions with the official organization before applying.</p>
             </section>
             <section aria-labelledby="footer-social-title">
-                <h3 id="footer-social-title">Find us soon</h3>
+                <h3 id="footer-social-title">Stay connected</h3>
+                <a class="footer-telegram-button" href="https://t.me/SeekScholarship" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M21.8 3.2 18.5 20c-.2 1.2-.9 1.5-1.9.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1L18 6.4c.4-.4-.1-.6-.6-.3L5.8 13.4l-5-1.6c-1.1-.3-1.1-1.1.2-1.6L20.5 2.7c.9-.3 1.6.2 1.3.5Z"/></svg>
+                    Join our Telegram channel
+                </a>
                 <ul class="site-footer-social-list">
                     <li>Instagram · coming soon</li>
                     <li>Facebook · coming soon</li>

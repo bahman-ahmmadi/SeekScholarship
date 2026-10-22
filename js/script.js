@@ -1,4 +1,4 @@
-﻿const searchInput = document.querySelector(".search-box input");
+const searchInput = document.querySelector(".search-box input");
 const scholarshipSearch = document.querySelector("#scholarship-search");
 const scholarshipCountry = document.querySelector("#scholarship-country");
 const scholarshipDegree = document.querySelector("#scholarship-degree");
@@ -215,7 +215,7 @@ function filterScholarships() {
     let country = "";
 
     if (scholarshipCountry) {
-        country = scholarshipCountry.value;
+        country = scholarshipCountry.value || selectedCountry || "";
     } else if (countrySearch) {
         country = countrySearch.value;
     }
@@ -297,39 +297,50 @@ function populateCountryFilters() {
     });
 }
 
+function showCountryStatus(message) {
+    const grid = document.querySelector(".countries-grid");
+    if (!grid) return;
+    grid.replaceChildren(makeCardText("p", "countries-status", message));
+    grid.setAttribute("aria-busy", "false");
+}
+
 function updateCountryCards() {
     const grid = document.querySelector(".countries-grid");
     if (!grid || !countriesLoaded || scholarshipLoadState !== "loaded") return;
 
-    activeCountries.forEach(function (country) {
-        let card = Array.from(grid.querySelectorAll(".country-card[data-country]")).find(function (item) {
-            return item.dataset.country === country.name;
-        });
+    const cards = document.createDocumentFragment();
+    activeCountries.slice().sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+    }).forEach(function (country) {
+        const count = allScholarships.filter(function (item) {
+            return normalizeCountryFilter(item.country) === normalizeCountryFilter(country.name);
+        }).length;
+        if (count === 0) return;
 
-        if (!card) {
-            card = document.createElement("a");
-            card.className = "country-card";
-            card.dataset.country = country.name;
-            card.href = `scholarships?country=${encodeURIComponent(country.name)}`;
-            const heading = document.createElement("h2");
+        const card = document.createElement("a");
+        card.className = "country-card";
+        card.dataset.country = country.name;
+        card.href = `scholarships?country=${encodeURIComponent(country.name)}`;
+        const heading = document.createElement("h2");
+        if (country.flag_path) {
             const flag = document.createElement("img");
             flag.className = "country-flag";
+            flag.src = country.flag_path;
             flag.alt = "";
-            heading.append(flag, document.createTextNode(country.name));
-            card.append(heading, makeCardText("p", "country-scholarship-count", ""));
-            grid.appendChild(card);
+            heading.append(flag);
         }
-
-        const flag = card.querySelector(".country-flag");
-        if (flag && country.flag_path) flag.src = country.flag_path;
-        const count = allScholarships.filter(function (item) {
-            return item.country === country.name;
-        }).length;
-        const countLabel = card.querySelector(".country-scholarship-count");
-        if (countLabel) {
-            countLabel.textContent = `${count} ${count === 1 ? "scholarship" : "scholarships"} available`;
-        }
+        heading.append(document.createTextNode(country.name));
+        card.append(heading,
+            makeCardText("p", "country-scholarship-count", `${count} ${count === 1 ? "scholarship" : "scholarships"} available`),
+            makeCardText("span", "country-card-action", "Explore scholarships →"));
+        cards.append(card);
     });
+    if (!cards.childElementCount) {
+        showCountryStatus("New scholarship destinations are on the way. Check back soon.");
+        return;
+    }
+    grid.replaceChildren(cards);
+    grid.setAttribute("aria-busy", "false");
 }
 
 function renderCurrentScholarships() {
@@ -352,10 +363,12 @@ function loadCountriesOnce() {
             activeCountries = countries;
             countriesLoaded = true;
             populateCountryFilters();
+            renderCurrentScholarships();
             updateCountryCards();
         })
         .catch(function (error) {
             console.warn("Could not load active countries:", error.message);
+            showCountryStatus("Destinations could not load. Please refresh to try again.");
         })
         .finally(function () {
             countriesLoadPromise = null;
@@ -390,6 +403,7 @@ function loadAllScholarships() {
         })
         .catch(function (error) {
             console.error("Could not load published Supabase scholarships:", error.message);
+            showCountryStatus("Destinations could not load. Please refresh to try again.");
             if (isHomePage && !hasHomeSearchFilters() && featuredScholarshipsLoaded) {
                 scholarshipLoadState = "loaded";
                 displayScholarships(featuredScholarships.slice(0, 3));

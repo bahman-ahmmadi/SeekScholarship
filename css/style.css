@@ -3706,3 +3706,43 @@ body {
         text-align: center;
     }
 }
+
+
+/* Clear discovery copy, available destinations, and Telegram community. */
+.hero .hero-intro strong,
+.hero .hero-intro span { display: block; }
+.hero .hero-intro strong { margin-bottom: 8px; font-size: 1.2em; }
+.site-footer .footer-telegram-button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    margin: 4px 0 20px; padding: 14px 18px; border: 1px solid #fff;
+    border-radius: 10px; background: #fff; color: #124b7a;
+    font-size: 15px; font-weight: 750; text-decoration: none; line-height: 1.4;
+    box-shadow: 0 6px 18px #092f5526;
+}
+.site-footer .footer-telegram-button:hover { background: #e8f6ff; color: #09385e; }
+.footer-telegram-button:focus-visible,
+.countries-grid .country-card:focus-visible { outline: 3px solid #38bdf8; outline-offset: 5px; }
+.countries-page { background: #f4f8fc; padding: 1px 0 80px; min-height: 65vh; }
+.countries-page .countries-intro { max-width: 1080px; margin: 0 auto; padding: 64px 24px 38px; text-align: left; }
+.countries-intro .section-label { color: #29779b; font-size: 12px; font-weight: 750; letter-spacing: .16em; margin: 0 0 14px; }
+.countries-intro h1 { color: #153956; font-size: clamp(30px, 4vw, 46px); line-height: 1.16; max-width: 650px; margin: 0; }
+.countries-page .countries-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 1080px; gap: 22px; margin: 0 auto; padding: 0 24px; }
+.countries-page .country-card { display: flex; flex-direction: column; align-items: flex-start; min-height: 208px; padding: 28px; border: 1px solid #dce7ef; border-radius: 18px; background: #fff; text-align: left; text-decoration: none; box-shadow: 0 6px 22px #12395706; transition: border-color .2s, box-shadow .2s; }
+.countries-page .country-card:hover { border-color: #73b4d7; box-shadow: 0 10px 28px #12395712; transform: none; }
+.countries-grid .country-card h2 { margin: 0 0 18px; color: #153956; font-size: 21px; line-height: 1.3; }
+.countries-page .country-flag { width: 40px; height: 28px; }
+.countries-page .country-scholarship-count { margin: 0 0 26px; padding: 6px 10px; border: 0; background: #edf7f4; color: #256553; font-size: 13px; }
+.country-card-action { margin-top: auto; color: #216b96; font-size: 14px; font-weight: 700; }
+.countries-status { grid-column: 1 / -1; padding: 30px 0; color: #52677f; }
+.contact-page .contact-section { display: block; max-width: 740px; margin: 0 auto 64px; padding: 30px; }
+.contact-page .page-header { max-width: 740px; margin-right: auto; margin-left: auto; }
+@media (max-width: 800px) {
+    .countries-page .countries-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+    .countries-page .countries-intro { padding: 40px 20px 28px; }
+    .countries-page .countries-grid { grid-template-columns: 1fr; padding: 0 20px; gap: 16px; }
+    .countries-page .country-card { min-height: 185px; padding: 24px; }
+    .contact-page .contact-section { margin: 0 16px 44px; padding: 22px; }
+    .site-footer .footer-telegram-button { width: 100%; box-sizing: border-box; }
+}
