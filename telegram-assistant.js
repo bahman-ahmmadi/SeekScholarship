@@ -135,7 +135,7 @@ async function reserveDraft(env, scholarship, version) {
     }
 
     if (post.status === "draft" && post.source_version === version) return { ...post, alreadyDraft: true };
-    if (post.status === "generating" || post.status === "approved" || post.status === "publishing" || post.status === "published" || post.status === "publish_unknown") {
+    if (post.status === "generating" || post.status === "approved" || post.status === "publishing" || post.status === "publish_unknown") {
         throw new Error(`This scholarship already has a ${post.status.replaceAll("_", " ")} Telegram post.`);
     }
 
@@ -147,6 +147,12 @@ async function reserveDraft(env, scholarship, version) {
         approval_token_expires_at: null,
         review_chat_id: null,
         review_message_id: null,
+        approved_by_telegram_user_id: null,
+        approved_at: null,
+        channel_chat_id: null,
+        channel_message_id: null,
+        published_at: null,
+        publish_attempted_at: null,
         last_error: null,
         generation: Number(post.generation || 0) + 1,
         updated_at: new Date().toISOString()
