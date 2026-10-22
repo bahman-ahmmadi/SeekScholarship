@@ -207,6 +207,21 @@ function makeScholarshipPost(scholarship) {
     ].join("\n");
 }
 
+function applicationPreview(text) {
+    const match = /^Apply Link: (https?:\/\/\S+)$/m.exec(String(text || ""));
+    if (!match) return { is_disabled: true };
+    try {
+        const url = new URL(match[1]);
+        // The fallback details page is not the scholarship provider's application page.
+        if (["seekscholarship.com", "www.seekscholarship.com"].includes(url.hostname) || url.username || url.password) {
+            return { is_disabled: true };
+        }
+        return { url: url.href, prefer_large_media: true, show_above_text: true };
+    } catch (_) {
+        return { is_disabled: true };
+    }
+}
+
 function callbackData(action, postId, token) {
     const idBase36 = BigInt(postId).toString(36);
     const prefix = action === "approve" ? "a" : action === "reject" ? "x" : "r";
@@ -253,6 +268,7 @@ async function sendDraftToOwner(env, post, text, token, existingMessage) {
                 chat_id: chatId,
                 message_id: existingMessage.review_message_id,
                 text,
+                link_preview_options: applicationPreview(text),
                 reply_markup: keyboard
             });
         } catch (_) {
@@ -264,7 +280,7 @@ async function sendDraftToOwner(env, post, text, token, existingMessage) {
             chat_id: chatId,
             text,
             reply_markup: keyboard,
-            disable_web_page_preview: true
+            link_preview_options: applicationPreview(text)
         });
     }
     return message;
@@ -431,7 +447,7 @@ async function publishApprovedPost(env, post) {
         const message = await telegramCall(env, "sendMessage", {
             chat_id: TELEGRAM_CHANNEL,
             text: post.draft_text,
-            disable_web_page_preview: true
+            link_preview_options: applicationPreview(post.draft_text)
         });
         const marked = await callRpc(env, "mark_telegram_scholarship_published", {
             p_post_id: post.id,
