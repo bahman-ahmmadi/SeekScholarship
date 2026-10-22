@@ -1,4 +1,4 @@
-﻿/* ================================
+/* ================================
    GLOBAL STYLES
 ================================ */
 
@@ -678,7 +678,7 @@ body.has-active-scholarship-filter .scholarships-page .search-divider {
     background-image:
         linear-gradient(90deg, rgba(12, 32, 55, 0.30), rgba(12, 32, 55, 0.14) 55%, rgba(12, 32, 55, 0.25)),
         linear-gradient(0deg, rgba(10, 30, 52, 0.30), rgba(10, 30, 52, 0.06) 48%, rgba(10, 30, 52, 0.16)),
-        url("../ScholarshipsPhoto1.jpeg");
+        url("../Scholarships.webp");
     background-position: center 48%;
     background-size: cover;
 }
@@ -793,7 +793,7 @@ body.has-active-scholarship-filter .scholarships-page .search-divider {
 .scholarships-page {
     background-image:
         linear-gradient(180deg, rgba(241, 247, 253, 0.82), rgba(241, 247, 253, 0.94) 38%, rgba(241, 247, 253, 0.96)),
-        url("../ScholarshipsPhoto1.jpeg");
+        url("../Scholarships.webp");
     background-position: center top;
     background-size: cover;
     background-repeat: no-repeat;
@@ -962,7 +962,7 @@ body.has-active-scholarship-filter .scholarships-page .search-divider {
     background-image:
         linear-gradient(90deg, rgba(11, 31, 53, 0.38), rgba(11, 31, 53, 0.2) 55%, rgba(11, 31, 53, 0.36)),
         linear-gradient(0deg, rgba(16, 42, 68, 0.42), rgba(16, 42, 68, 0.12)),
-        url("../ScholarshipsPhoto1.jpeg");
+        url("../Scholarships.webp");
 }
 
 .countries-page > .page-header {
