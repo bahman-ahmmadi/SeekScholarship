@@ -367,7 +367,7 @@ async function handleDraftCommand(env, scholarshipId) {
     } else {
         result = await createOrRegenerateDraft(env, scholarship, version, reserved);
     }
-    const message = await sendDraftToOwner(env, result.post, result.draftText, result.token, reserved);
+    const message = await sendDraftToOwner(env, result.post, result.draftText, result.token);
     await updateReviewMessageIds(env, result.post, message);
     return message;
 }
