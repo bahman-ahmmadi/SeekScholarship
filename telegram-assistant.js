@@ -164,26 +164,47 @@ function simpleText(value, maxLength = 350) {
         .slice(0, maxLength);
 }
 
-function makeScholarshipPost(scholarship, opening) {
-    const lines = [
-        `🎓 ${simpleText(scholarship.name, 220)}`,
+function postDeadline(value) {
+    const text = simpleText(value, 100);
+    if (!text) return "Not specified";
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+    const date = new Date(`${text}T00:00:00Z`);
+    if (Number.isNaN(date.getTime())) return text;
+    return new Intl.DateTimeFormat("en-GB", {
+        day: "numeric", month: "long", year: "numeric", timeZone: "UTC"
+    }).format(date);
+}
+
+function makeScholarshipPost(scholarship) {
+    const country = simpleText(scholarship.countries?.name, 100);
+    const funding = simpleText(scholarship.funding, 120);
+    const countryTag = country.replace(/[^\p{L}\p{N}_]/gu, "");
+    const tags = ["#SeekScholarship"];
+    if (/fully[ -]?funded/i.test(funding) && !/partial|not fully/i.test(funding)) tags.push("#FullyFunded");
+    tags.push("#Scholarship");
+    if (countryTag) tags.push(`#${countryTag}`);
+    tags.push("#Students");
+
+    let applyUrl = `https://seekscholarship.com/scholarship?id=${encodeURIComponent(String(scholarship.id))}`;
+    try {
+        const url = new URL(String(scholarship.application_url || ""));
+        if (["https:", "http:"].includes(url.protocol)) applyUrl = url.href;
+    } catch (_) { /* Use the scholarship details page when no valid apply URL is saved. */ }
+
+    return [
+        simpleText(scholarship.name, 220),
         "",
-        opening
-    ];
-    const facts = [
-        ["Awarding country", simpleText(scholarship.countries?.name, 100)],
-        ["Degree", simpleText(scholarship.degree, 120)],
-        ["Funding", simpleText(scholarship.funding, 120)],
-        ["Field of study", simpleText(scholarship.field, 160)],
-        ["Deadline", simpleText(scholarship.deadline, 100)],
-        ["Eligible countries", simpleText(scholarship.eligible_countries, 220)],
-        ["Language requirement", simpleText(scholarship.language_requirement, 180)]
-    ];
-    facts.forEach(([label, value]) => {
-        if (value) lines.push(`${label}: ${value}`);
-    });
-    lines.push("", `Details: https://seekscholarship.com/scholarship?id=${encodeURIComponent(String(scholarship.id))}`);
-    return lines.join("\n").slice(0, 3900);
+        `Offered by: ${simpleText(scholarship.offered_by, 160) || "Not specified"}`,
+        `Degree level: ${simpleText(scholarship.degree, 120) || "Not specified"}`,
+        `Scholarship coverage: ${funding || "Not specified"}`,
+        `Eligible nationality: ${simpleText(scholarship.eligible_countries, 220) || "Not specified"}`,
+        `Award country: ${country || "Not specified"}`,
+        `Last date: ${postDeadline(scholarship.deadline)}`,
+        "",
+        `Apply Link: ${applyUrl}`,
+        "",
+        tags.join(" ")
+    ].join("\n");
 }
 
 function callbackData(action, postId, token) {
