@@ -222,7 +222,7 @@ function applicationPreview(text) {
         if (["seekscholarship.com", "www.seekscholarship.com"].includes(url.hostname) || url.username || url.password) {
             return { is_disabled: true };
         }
-        return { url: url.href, prefer_large_media: true, show_above_text: true };
+        return { url: url.href, prefer_large_media: true, show_above_text: false };
     } catch (_) {
         return { is_disabled: true };
     }

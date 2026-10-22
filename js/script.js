@@ -279,21 +279,22 @@ function filterHomeScholarships() {
 }
 
 function populateCountryFilters() {
-    [scholarshipCountry, countrySearch].filter(Boolean).forEach(function (select) {
-        activeCountries.forEach(function (country) {
-            const exists = Array.from(select.options).some(function (option) {
-                return normalizeCountryFilter(option.value) === normalizeCountryFilter(country.name);
-            });
-            if (!exists) {
-                select.add(new Option(country.name, country.name));
-            }
+    if (!countriesLoaded || (!isHomePage && !allScholarshipsLoaded)) return;
+    const available = activeCountries.filter(function (country) {
+        return isHomePage || allScholarships.some(function (item) {
+            return normalizeCountryFilter(item.country) === normalizeCountryFilter(country.name);
         });
-        if (selectedCountry) {
-            const matchingOption = Array.from(select.options).find(function (option) {
-                return normalizeCountryFilter(option.value) === normalizeCountryFilter(selectedCountry);
-            });
-            if (matchingOption) select.value = matchingOption.value;
-        }
+    }).sort(function (a, b) { return a.name.localeCompare(b.name); });
+    [scholarshipCountry, countrySearch].filter(Boolean).forEach(function (select) {
+        const previous = select.value || selectedCountry || "";
+        const placeholder = select.options[0].cloneNode(true);
+        select.replaceChildren(placeholder);
+        available.forEach(function (country) { select.add(new Option(country.name, country.name)); });
+        const match = Array.from(select.options).find(function (option) {
+            return normalizeCountryFilter(option.value) === normalizeCountryFilter(previous);
+        });
+        select.value = match ? match.value : "";
+        select.disabled = false;
     });
 }
 
@@ -358,7 +359,10 @@ function renderCurrentScholarships() {
 
 function loadCountriesOnce() {
     if (!window.scholarlyData || countriesLoaded || countriesLoadPromise) return countriesLoadPromise;
-    countriesLoadPromise = window.scholarlyData.getCountries()
+    const countryRequest = isHomePage
+        ? window.scholarlyData.getCountriesWithScholarships()
+        : window.scholarlyData.getCountries();
+    countriesLoadPromise = countryRequest
         .then(function (countries) {
             activeCountries = countries;
             countriesLoaded = true;
@@ -392,6 +396,7 @@ function loadAllScholarships() {
         .then(function (remoteScholarships) {
             allScholarships = remoteScholarships;
             allScholarshipsLoaded = true;
+            populateCountryFilters();
             if (!featuredScholarshipsLoaded) {
                 featuredScholarships = allScholarships.filter(function (item) { return item.isFeatured; }).slice(0, 3);
                 featuredScholarshipsLoaded = true;

@@ -74,6 +74,17 @@
             });
             return rows.map(normalize);
         },
+        async getCountriesWithScholarships() {
+            const rows = await query("scholarships", {
+                select: "countries(code,name,flag_path,is_active)", status: "eq.published"
+            });
+            const countries = new Map();
+            rows.forEach(function (row) {
+                const country = row.countries;
+                if (country?.name && country.is_active !== false) countries.set(country.name, country);
+            });
+            return Array.from(countries.values());
+        },
         getCountries() {
             return query("countries", {
                 select: "code,name,flag_path,is_active", is_active: "eq.true", order: "name"
