@@ -10,6 +10,7 @@
       "/index.html",
       "/sitemap.xml",
       "/telegram/webhook",
+      "/api/countries",
       "/scholarships",
       "/scholarships.html",
       "/scholarship",

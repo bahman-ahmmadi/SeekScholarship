@@ -1,3 +1,4 @@
+import { serveCountryData } from "./country-data.js";
 import { serveFeaturedHome } from "./featured-home.js";
 import { handleTelegramWebhook } from "./telegram-assistant.js";
 import { canonicalRedirect, withCanonical } from "./canonical.js";
@@ -107,6 +108,8 @@ function sitemapErrorResponse() {
 export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
+
+        if (url.pathname === "/api/countries") return serveCountryData(request, env, ctx);
 
         if (url.pathname === "/telegram/webhook") {
             return handleTelegramWebhook(request, env);
