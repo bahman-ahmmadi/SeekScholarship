@@ -27,7 +27,7 @@ function renderCards(rows) {
             }
             deadline = `<div class="deadline"><span>Deadline</span><strong>${escapeHtml(label)}</strong></div>`;
         }
-        return `<article class="scholarship-card">${top ? `<div class="card-top">${top}</div>` : ""}<h3>${escapeHtml(row.name)}</h3>${deadline}<a class="view-button" href="scholarship.html?id=${escapeHtml(encodeURIComponent(String(row.id)))}">View Scholarship →</a></article>`;
+        return `<article class="scholarship-card">${top ? `<div class="card-top">${top}</div>` : ""}<h3>${escapeHtml(row.name)}</h3>${deadline}<a class="view-button" href="scholarship?id=${escapeHtml(encodeURIComponent(String(row.id)))}">View Scholarship →</a></article>`;
     }).join("");
 }
 
@@ -38,7 +38,7 @@ async function refreshFeatured(env, cacheKey) {
         endpoint.search = new URLSearchParams({
             select: "id,name,funding,deadline,is_featured,countries(name)",
             status: "eq.published", is_featured: "eq.true", order: "created_at.desc", limit: "3"
-        });
+        }).toString();
         const response = await fetch(endpoint, {
             headers: { apikey: env.SUPABASE_PUBLISHABLE_KEY, Accept: "application/json" },
             signal: AbortSignal.timeout(3000)
@@ -96,8 +96,19 @@ export async function serveFeaturedHome(request, env, ctx) {
     });
     const asset = await env.ASSETS.fetch(request);
     if (asset.status !== 200 || !asset.headers.get("Content-Type")?.includes("text/html")) return asset;
-    const result = await dataPromise;
-    if (!result) return asset;
+    // A cold database request must not hold up the entire homepage.
+    let timer;
+    const result = await Promise.race([
+        dataPromise,
+        new Promise(resolve => { timer = setTimeout(() => resolve(null), 350); })
+    ]);
+    clearTimeout(timer);
+    if (!result) {
+        ctx.waitUntil(dataPromise);
+        const headers = new Headers(asset.headers);
+        headers.set("X-Featured-Rendering", "client");
+        return new Response(asset.body, { status: asset.status, headers });
+    }
     const json = JSON.stringify(result.rows).replace(/</g, "\\u003c");
     const transformed = new HTMLRewriter().on("#scholarship-grid", {
         element(element) {

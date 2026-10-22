@@ -1,14 +1,9 @@
 const TELEGRAM_API = "https://api.telegram.org";
-const OPENAI_RESPONSES_API = "https://api.openai.com/v1/responses";
 const TELEGRAM_CHANNEL = "@SeekScholarship";
 const TOKEN_LIFETIME_MS = 48 * 60 * 60 * 1000;
 const SCHOLARSHIP_SELECT = "*,countries(name)";
 
-const OPENING_OPTIONS = [
-    "A new scholarship opportunity is ready to explore.",
-    "Explore this scholarship opportunity and review the official details.",
-    "Looking for an academic opportunity? Take a look at this scholarship."
-];
+const DRAFT_OPENING = "Explore this scholarship opportunity and review the official details.";
 
 function jsonResponse(value, status = 200) {
     return Response.json(value, {
@@ -23,8 +18,7 @@ function requireSecrets(env) {
         "SUPABASE_SERVICE_ROLE_KEY",
         "TELEGRAM_BOT_TOKEN",
         "TELEGRAM_WEBHOOK_SECRET",
-        "TELEGRAM_ADMIN_USER_ID",
-        "OPENAI_API_KEY"
+        "TELEGRAM_ADMIN_USER_ID"
     ];
     const missing = required.filter((name) => !env[name]);
     if (missing.length) throw new Error(`Missing Worker secrets/configuration: ${missing.join(", ")}`);
@@ -170,46 +164,6 @@ function simpleText(value, maxLength = 350) {
         .slice(0, maxLength);
 }
 
-async function generateNeutralOpening(env, scholarship) {
-    const scholarshipContext = {
-        name: simpleText(scholarship.name, 180),
-        country: simpleText(scholarship.countries?.name, 100),
-        degree: simpleText(scholarship.degree, 100)
-    };
-    const response = await fetch(OPENAI_RESPONSES_API, {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${env.OPENAI_API_KEY}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            model: env.OPENAI_MODEL || "gpt-4.1-mini",
-            store: false,
-            input: [
-                {
-                    role: "system",
-                    content: "Choose the single best neutral opening for a scholarship announcement. Return exactly one option string from the supplied allowlist, with no other text. Do not add, infer, or assert any fact."
-                },
-                {
-                    role: "user",
-                    content: JSON.stringify({ scholarship: scholarshipContext, allowed_openings: OPENING_OPTIONS })
-                }
-            ],
-            max_output_tokens: 80
-        }),
-        signal: AbortSignal.timeout(20_000)
-    });
-    if (!response.ok) throw new Error(`OpenAI returned HTTP ${response.status}`);
-    const data = await response.json();
-    const output = (data.output || [])
-        .flatMap((item) => item.content || [])
-        .filter((item) => item.type === "output_text")
-        .map((item) => item.text || "")
-        .join("")
-        .trim();
-    return OPENING_OPTIONS.includes(output) ? output : OPENING_OPTIONS[0];
-}
-
 function makeScholarshipPost(scholarship, opening) {
     const lines = [
         `🎓 ${simpleText(scholarship.name, 220)}`,
@@ -228,7 +182,7 @@ function makeScholarshipPost(scholarship, opening) {
     facts.forEach(([label, value]) => {
         if (value) lines.push(`${label}: ${value}`);
     });
-    lines.push("", `Details: https://seekscholarship.com/scholarship.html?id=${encodeURIComponent(String(scholarship.id))}`);
+    lines.push("", `Details: https://seekscholarship.com/scholarship?id=${encodeURIComponent(String(scholarship.id))}`);
     return lines.join("\n").slice(0, 3900);
 }
 
@@ -259,9 +213,10 @@ async function telegramCall(env, method, payload) {
     });
     const data = await response.json().catch(() => null);
     if (!response.ok || data?.ok !== true) {
-        const error = new Error(data?.description || `Telegram ${method} returned HTTP ${response.status}`);
-        error.httpStatus = response.status;
-        error.telegramOk = data?.ok === true;
+        const error = Object.assign(new Error(data?.description || `Telegram ${method} returned HTTP ${response.status}`), {
+            httpStatus: response.status,
+            telegramOk: data?.ok === true
+        });
         throw error;
     }
     return data.result;
@@ -301,7 +256,7 @@ async function createOrRegenerateDraft(env, scholarship, version, existing = nul
         return { post, alreadyDraft: true, token };
     }
     try {
-        const opening = await generateNeutralOpening(env, scholarship);
+        const opening = DRAFT_OPENING;
         const freshScholarship = await fetchPublishedScholarship(env, scholarship.id);
         if (!freshScholarship || await sourceVersion(freshScholarship) !== version) {
             await patchPost(env, post, "generating", {

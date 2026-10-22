@@ -101,7 +101,7 @@ function displayScholarships(list) {
         const link = document.createElement("a");
         link.className = "view-button";
         link.textContent = "View Scholarship " + String.fromCharCode(0x2192);
-        link.href = `scholarship.html?id=${encodeURIComponent(scholarship.databaseId)}`;
+        link.href = `scholarship?id=${encodeURIComponent(scholarship.databaseId)}`;
         card.appendChild(link);
         scholarshipGrid.appendChild(card);
     });
@@ -310,7 +310,7 @@ function updateCountryCards() {
             card = document.createElement("a");
             card.className = "country-card";
             card.dataset.country = country.name;
-            card.href = `scholarships.html?country=${encodeURIComponent(country.name)}`;
+            card.href = `scholarships?country=${encodeURIComponent(country.name)}`;
             const heading = document.createElement("h2");
             const flag = document.createElement("img");
             flag.className = "country-flag";

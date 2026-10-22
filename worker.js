@@ -1,13 +1,14 @@
 import { serveFeaturedHome } from "./featured-home.js";
 import { handleTelegramWebhook } from "./telegram-assistant.js";
+import { canonicalRedirect, withCanonical } from "./canonical.js";
 
 const STATIC_PUBLIC_URLS = [
     "https://seekscholarship.com/",
-    "https://seekscholarship.com/scholarships.html",
-    "https://seekscholarship.com/countries.html",
-    "https://seekscholarship.com/about.html",
-    "https://seekscholarship.com/team.html",
-    "https://seekscholarship.com/contact.html"
+    "https://seekscholarship.com/scholarships",
+    "https://seekscholarship.com/countries",
+    "https://seekscholarship.com/about",
+    "https://seekscholarship.com/team",
+    "https://seekscholarship.com/contact"
 ];
 
 const XML_HEADERS = {
@@ -26,7 +27,7 @@ function escapeXml(value) {
 
 function createSitemap(scholarshipIds) {
     const scholarshipUrls = scholarshipIds.map(function (id) {
-        return `https://seekscholarship.com/scholarship.html?id=${encodeURIComponent(String(id))}`;
+        return `https://seekscholarship.com/scholarship?id=${encodeURIComponent(String(id))}`;
     });
     const urls = [...STATIC_PUBLIC_URLS, ...scholarshipUrls];
     const entries = urls.map(function (url) {
@@ -62,7 +63,8 @@ async function getPublishedScholarshipIds(env) {
                 apikey: env.SUPABASE_PUBLISHABLE_KEY,
                 Authorization: `Bearer ${env.SUPABASE_PUBLISHABLE_KEY}`,
                 Accept: "application/json"
-            }
+            },
+            signal: AbortSignal.timeout(5000)
         });
 
         if (!response.ok) {
@@ -110,12 +112,15 @@ export default {
             return handleTelegramWebhook(request, env);
         }
 
+        const redirect = canonicalRedirect(request);
+        if (redirect) return redirect;
+
         if ((url.pathname === "/" || url.pathname === "/index.html") && request.method === "GET") {
-            return serveFeaturedHome(request, env, ctx);
+            return withCanonical(await serveFeaturedHome(request, env, ctx), request);
         }
 
         if (url.pathname !== "/sitemap.xml") {
-            return env.ASSETS.fetch(request);
+            return withCanonical(await env.ASSETS.fetch(request), request);
         }
 
         if (request.method !== "GET" && request.method !== "HEAD") {

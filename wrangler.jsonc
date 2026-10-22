@@ -5,7 +5,31 @@
   "assets": {
     "directory": ".",
     "binding": "ASSETS",
-    "run_worker_first": ["/", "/index.html", "/sitemap.xml", "/telegram/webhook"]
+    "run_worker_first": [
+      "/",
+      "/index.html",
+      "/sitemap.xml",
+      "/telegram/webhook",
+      "/scholarships",
+      "/scholarships.html",
+      "/scholarship",
+      "/scholarship.html",
+      "/countries",
+      "/countries.html",
+      "/about",
+      "/about.html",
+      "/team",
+      "/team.html",
+      "/contact",
+      "/contact.html",
+      "/index",
+      "/scholarships/",
+      "/scholarship/",
+      "/countries/",
+      "/about/",
+      "/team/",
+      "/contact/"
+    ]
   },
   "vars": {
     "SUPABASE_URL": "https://nrmfmvpjfmimiaemlmcd.supabase.co",

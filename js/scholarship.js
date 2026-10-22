@@ -27,7 +27,7 @@ function showScholarshipNotFound(message) {
     detail.textContent = message || "This scholarship may have been removed or the link may be incorrect.";
     const link = document.createElement("a");
     link.className = "view-button";
-    link.href = "scholarships.html";
+    link.href = "scholarships";
     link.textContent = "Browse scholarships";
     section.append(title, detail, link);
     page.replaceChildren(section);
@@ -60,7 +60,7 @@ function setMetaContent(selector, content) {
 
 function updateScholarshipMetadata(scholarship) {
     const title = `${scholarship.name} | SeekScholarship`;
-    const canonicalUrl = `https://seekscholarship.com/scholarship.html?id=${encodeURIComponent(scholarship.databaseId)}`;
+    const canonicalUrl = `https://seekscholarship.com/scholarship?id=${encodeURIComponent(scholarship.databaseId)}`;
     const descriptionText = document.createElement("div");
     descriptionText.innerHTML = sanitizeScholarshipHTML(scholarship.description || "");
     const scholarshipDescription = descriptionText.textContent.replace(/\s+/g, " ").trim();
