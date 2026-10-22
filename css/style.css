@@ -3709,9 +3709,6 @@ body {
 
 
 /* Clear discovery copy, available destinations, and Telegram community. */
-.hero .hero-intro strong,
-.hero .hero-intro span { display: block; }
-.hero .hero-intro strong { margin-bottom: 8px; font-size: 1.2em; }
 .site-footer .footer-telegram-button {
     display: inline-flex; align-items: center; justify-content: center; gap: 10px;
     margin: 4px 0 20px; padding: 14px 18px; border: 1px solid #fff;
@@ -3745,4 +3742,13 @@ body {
     .countries-page .country-card { min-height: 185px; padding: 24px; }
     .contact-page .contact-section { margin: 0 16px 44px; padding: 22px; }
     .site-footer .footer-telegram-button { width: 100%; box-sizing: border-box; }
+}
+
+/* Countries shares the scholarship detail banner's height and responsive sizing. */
+.countries-page .countries-banner {
+    margin-bottom: 38px;
+    background-image:
+        linear-gradient(90deg, rgba(8, 28, 50, .48), rgba(8, 28, 50, .19) 58%, rgba(8, 28, 50, .24)),
+        linear-gradient(0deg, rgba(8, 28, 50, .16), rgba(8, 28, 50, .12)),
+        url("../countries.webp");
 }
