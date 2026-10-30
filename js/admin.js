@@ -49,6 +49,7 @@
         scholarshipRows.replaceChildren();
         countryRows.replaceChildren();
         document.querySelector("#admin-account-label").textContent = "";
+        document.querySelector("#admin-email").value = "";
         document.querySelector("#admin-password").value = "";
         document.querySelector("#admin-new-password").value = "";
         document.querySelector("#admin-confirm-password").value = "";
@@ -943,6 +944,7 @@
         document.querySelector("#admin-signout").addEventListener("click", async function () {
             passwordRecoveryMode = false;
             showLoginView();
+            window.scholarlySetAdminRemember(false);
             try {
                 const { error } = await client.auth.signOut({ scope: "local" });
                 if (error) throw error;

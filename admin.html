@@ -22,13 +22,13 @@
             <p class="section-label">RESTRICTED AREA</p>
             <h1 id="admin-login-title">Admin sign in</h1>
             <p>Sign in with your invited SeekScholarship admin account to manage listings and countries.</p>
-            <form id="admin-login-form" class="admin-form">
+            <form id="admin-login-form" class="admin-form" autocomplete="off">
                 <label for="admin-email">Email</label>
-                <input id="admin-email" name="email" type="email" autocomplete="username" required>
+                <input id="admin-email" name="email" type="email" autocomplete="off" required>
                 <label for="admin-password">Password</label>
-                <input id="admin-password" name="password" type="password" autocomplete="current-password" required>
+                <input id="admin-password" name="password" type="password" autocomplete="off" required>
                 <label class="admin-checkbox-label"><input id="admin-remember-me" name="remember-me" type="checkbox"> Remember me on this device</label>
-                <p>Use this option only on a private device. Otherwise, sign-in lasts for this tab only.</p>
+                <p>Leave this unchecked on a shared device. Without it, you’ll sign in again after refreshing or closing this page.</p>
                 <button class="admin-primary-button" type="submit">Sign in</button>
             </form>
             <button class="admin-text-button" id="admin-forgot-password" type="button">Forgot password?</button>
