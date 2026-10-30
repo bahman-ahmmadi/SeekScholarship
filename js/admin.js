@@ -607,6 +607,10 @@
         }
 
         const button = document.querySelector("#scholarship-save-button");
+        const previousScholarship = recordId
+            ? scholarships.find((item) => String(item.id) === String(recordId))
+            : null;
+        const shouldCreateTelegramDraft = record.status === "published" && previousScholarship?.status !== "published";
         button.disabled = true;
         setMessage(scholarshipMessage, recordId ? "Updating scholarship…" : "Saving scholarship…", false);
         let query = client.from("scholarships");
@@ -617,11 +621,35 @@
             query = query.insert(record);
         }
         try {
-            const { error } = await query;
+            const { data: savedScholarship, error } = await query.select("id").single();
             if (error) throw error;
 
             resetScholarshipForm();
-            if (await loadDashboardData()) {
+            await loadDashboardData();
+            if (shouldCreateTelegramDraft) {
+                setMessage(globalMessage, "Scholarship published. Sending your Telegram review draft…", false);
+                try {
+                    const { data: sessionData, error: sessionError } = await client.auth.getSession();
+                    if (sessionError || !sessionData.session) throw new Error("Your admin session expired. Sign in again.");
+                    const response = await fetch("/api/telegram/draft", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${sessionData.session.access_token}`
+                        },
+                        body: JSON.stringify({ scholarship_id: String(savedScholarship.id) })
+                    });
+                    const result = await response.json().catch(() => null);
+                    if (!response.ok) throw new Error(result?.error || `Telegram request failed (HTTP ${response.status}).`);
+                    if (result.sent) {
+                        setMessage(globalMessage, "Scholarship published. The Telegram approval draft was sent to you; it will only be posted if you approve it.", false);
+                    } else {
+                        setMessage(globalMessage, `Scholarship published. A Telegram draft already exists or is being processed (status: ${result.status}); no duplicate was sent.`, false);
+                    }
+                } catch (error) {
+                    setMessage(globalMessage, `Scholarship is live, but Telegram could not send the review draft. Retry with /draft ${savedScholarship.id}. ${error.message || "Check the Telegram Worker setup."}`, true);
+                }
+            } else {
                 setMessage(globalMessage, recordId ? "Scholarship updated." : "Scholarship saved.", false);
             }
         } catch (error) {

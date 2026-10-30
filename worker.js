@@ -1,6 +1,6 @@
 import { serveCountryData } from "./country-data.js";
 import { serveFeaturedHome } from "./featured-home.js";
-import { handleTelegramWebhook } from "./telegram-assistant.js";
+import { handleTelegramDraftRequest, handleTelegramWebhook } from "./telegram-assistant.js";
 import { canonicalRedirect, withCanonical } from "./canonical.js";
 
 const STATIC_PUBLIC_URLS = [
@@ -113,6 +113,10 @@ export default {
 
         if (url.pathname === "/telegram/webhook") {
             return handleTelegramWebhook(request, env);
+        }
+
+        if (url.pathname === "/api/telegram/draft") {
+            return handleTelegramDraftRequest(request, env);
         }
 
         const redirect = canonicalRedirect(request);

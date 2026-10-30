@@ -372,6 +372,83 @@ async function handleDraftCommand(env, scholarshipId) {
     return message;
 }
 
+async function handleAutomaticDraft(env, scholarshipId) {
+    if (!/^\d{1,20}$/.test(String(scholarshipId))) throw new Error("Invalid scholarship ID.");
+    const scholarship = await fetchPublishedScholarship(env, scholarshipId);
+    if (!scholarship) throw new Error("The scholarship is no longer published.");
+    const version = await sourceVersion(scholarship);
+    const existing = await getPostByScholarship(env, scholarship.id);
+
+    // Publishing the same website record again or retrying a network request must not send a duplicate review.
+    if (existing && ["generating", "approved", "publishing", "publish_unknown", "published"].includes(existing.status)) {
+        return { sent: false, status: existing.status };
+    }
+    if (existing?.status === "draft" && existing.source_version === version) {
+        return { sent: false, status: "draft" };
+    }
+
+    const reserved = await reserveDraft(env, scholarship, version);
+    if (reserved.alreadyDraft) return { sent: false, status: "draft" };
+    const result = await createOrRegenerateDraft(env, scholarship, version, reserved);
+    const message = await sendDraftToOwner(env, result.post, result.draftText, result.token);
+    await updateReviewMessageIds(env, result.post, message);
+    return { sent: true, status: "draft" };
+}
+
+async function isAuthorizedWebsiteAdmin(request, env) {
+    const match = /^Bearer\s+(.+)$/i.exec(request.headers.get("Authorization") || "");
+    if (!match) return false;
+    const headers = {
+        apikey: env.SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${match[1]}`
+    };
+    const base = env.SUPABASE_URL.replace(/\/+$/, "");
+    const userResponse = await fetch(`${base}/auth/v1/user`, {
+        headers,
+        signal: AbortSignal.timeout(10_000)
+    });
+    if (!userResponse.ok) return false;
+    const user = await userResponse.json().catch(() => null);
+    if (!user?.id) return false;
+    const adminResponse = await fetch(`${base}/rest/v1/rpc/is_admin`, {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: "{}",
+        signal: AbortSignal.timeout(10_000)
+    });
+    return adminResponse.ok && await adminResponse.json().catch(() => false) === true;
+}
+
+export async function handleTelegramDraftRequest(request, env) {
+    if (request.method !== "POST") return jsonResponse({ error: "Method not allowed." }, 405);
+    try {
+        requireSecrets(env);
+        if (!env.SUPABASE_PUBLISHABLE_KEY) throw new Error("Missing Worker configuration.");
+    } catch (error) {
+        console.error("Telegram draft endpoint configuration error:", String(error.message || error).slice(0, 300));
+        return jsonResponse({ error: "Telegram approval is not configured." }, 503);
+    }
+
+    try {
+        if (!await isAuthorizedWebsiteAdmin(request, env)) return jsonResponse({ error: "Admin access required." }, 403);
+    } catch (_) {
+        return jsonResponse({ error: "Could not verify admin access." }, 503);
+    }
+
+    let body;
+    try { body = await request.json(); } catch (_) { return jsonResponse({ error: "Invalid request." }, 400); }
+    const scholarshipId = String(body?.scholarship_id || "");
+    if (!/^\d{1,20}$/.test(scholarshipId)) return jsonResponse({ error: "Invalid scholarship ID." }, 400);
+
+    try {
+        const result = await handleAutomaticDraft(env, scholarshipId);
+        return jsonResponse({ ok: true, ...result });
+    } catch (error) {
+        console.error("Automatic Telegram draft failed:", String(error.message || error).slice(0, 400));
+        return jsonResponse({ error: String(error.message || "Could not send a review draft.").slice(0, 400) }, 502);
+    }
+}
+
 async function loadPost(env, postId) {
     const query = new URLSearchParams({
         select: "id,scholarship_id,source_version,draft_text,status,generation,approval_token_hash,approval_token_expires_at,approved_by_telegram_user_id,review_chat_id,review_message_id",
