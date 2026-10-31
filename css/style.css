@@ -678,7 +678,7 @@ body.has-active-scholarship-filter .scholarships-page .search-divider {
     background-image:
         linear-gradient(90deg, rgba(12, 32, 55, 0.30), rgba(12, 32, 55, 0.14) 55%, rgba(12, 32, 55, 0.25)),
         linear-gradient(0deg, rgba(10, 30, 52, 0.30), rgba(10, 30, 52, 0.06) 48%, rgba(10, 30, 52, 0.16)),
-        url("../scholarships.jpg");
+        url("../Scholarships.jpg");
     background-position: center 48%;
     background-size: cover;
 }
