@@ -25,7 +25,7 @@ AGENTS.md
 sitemap.xml
 
 featured-home.js
-deadline-utils.js
+/deadline-utils.js
 telegram-assistant.js
 canonical.js
 country-data.js
