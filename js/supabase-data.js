@@ -4,6 +4,28 @@
         return;
     }
 
+    function isDeadlineActive(value) {
+        if (typeof window.scholarlyDeadline?.isActive === "function") return window.scholarlyDeadline.isActive(value);
+        const text = String(value || "").trim();
+        if (!text || text.toLowerCase() === "not specified") return true;
+        const match = text.match(/^(\d{4}-\d{2}-\d{2})(?:$|T)/);
+        let date = match?.[1] || "";
+        if (!date) {
+            const parsed = new Date(text);
+            if (Number.isNaN(parsed.getTime())) return true;
+            const parts = new Intl.DateTimeFormat("en-CA", {
+                timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit"
+            }).formatToParts(parsed);
+            const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+            date = `${values.year}-${values.month}-${values.day}`;
+        }
+        const parts = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit"
+        }).formatToParts(new Date());
+        const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+        return date >= `${values.year}-${values.month}-${values.day}`;
+    }
+
     function normalizeScholarship(row, includeDetails = false) {
         const country = row.countries || {};
         const scholarship = {
@@ -51,7 +73,7 @@
                 .order("created_at", { ascending: false });
 
             if (error) throw error;
-            return (data || []).filter(row => window.scholarlyDeadline.isActive(row.deadline)).slice(0, 3).map(normalizeScholarship);
+            return (data || []).filter(row => isDeadlineActive(row.deadline)).slice(0, 3).map(normalizeScholarship);
         },
 
         async getPublishedScholarships() {
@@ -62,7 +84,7 @@
                 .order("created_at", { ascending: false });
 
             if (error) throw error;
-            return (data || []).filter(row => window.scholarlyDeadline.isActive(row.deadline)).map(normalizeScholarship);
+            return (data || []).filter(row => isDeadlineActive(row.deadline)).map(normalizeScholarship);
         },
 
         async getScholarship(id) {
@@ -74,7 +96,7 @@
                 .maybeSingle();
 
             if (error) throw error;
-            return data && window.scholarlyDeadline.isActive(data.deadline) ? normalizeScholarship(data, true) : null;
+            return data && isDeadlineActive(data.deadline) ? normalizeScholarship(data, true) : null;
         },
 
         async getCountries() {
