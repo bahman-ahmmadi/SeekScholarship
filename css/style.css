@@ -3716,6 +3716,8 @@ body {
     font-size: 15px; font-weight: 750; text-decoration: none; line-height: 1.4;
     box-shadow: 0 6px 18px #092f5526;
 }
+.footer-social-buttons { display: flex; max-width: 300px; flex-direction: column; gap: 10px; }
+.site-footer .footer-social-buttons .footer-telegram-button { display: flex; width: 100%; box-sizing: border-box; margin: 0; }
 .site-footer .footer-telegram-button:hover { background: #e8f6ff; color: #09385e; }
 .footer-telegram-button:focus-visible,
 .countries-grid .country-card:focus-visible { outline: 3px solid #38bdf8; outline-offset: 5px; }
