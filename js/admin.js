@@ -857,13 +857,20 @@
             const email = document.querySelector("#admin-recovery-email").value.trim();
             button.disabled = true;
             setMessage(recoveryMessage, "Sending reset link…", false);
-            const redirectTo = new URL("admin.html?mode=recovery", window.location.href).href;
+            const redirectTo = new URL("/admin.html", window.location.origin);
+            redirectTo.searchParams.set("mode", "recovery");
             try {
-                const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo });
+                const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: redirectTo.href });
                 if (error) throw error;
                 setMessage(recoveryMessage, "If an account exists for that address, a password reset link has been sent.", false);
-            } catch (_) {
-                setMessage(recoveryMessage, "We could not send a reset email. Please try again later.", true);
+            } catch (error) {
+                const detail = String(error?.message || "").slice(0, 240);
+                const redirectRejected = /redirect/i.test(detail) && /(not allowed|invalid|allowlist|allow list)/i.test(detail);
+                setMessage(recoveryMessage, redirectRejected
+                    ? "Supabase blocked the recovery destination. Add https://seekscholarship.com/admin.html?mode=recovery under Authentication → URL Configuration → Redirect URLs, then try again."
+                    : detail
+                        ? `Supabase could not send the reset email: ${detail}`
+                        : "We could not send the reset email. Check the Supabase Auth email settings and try again.", true);
             } finally {
                 button.disabled = false;
             }
@@ -890,8 +897,11 @@
                 setMessage(loginMessage, signOutError
                     ? "Password updated, but sign-out failed. Reload and sign out again."
                     : "Password updated. Sign in with your new password.", Boolean(signOutError));
-            } catch (_) {
-                setMessage(newPasswordMessage, "Could not complete the password reset. Request a new reset email if the link expired.", true);
+            } catch (error) {
+                const detail = String(error?.message || "").slice(0, 200);
+                setMessage(newPasswordMessage, detail
+                    ? `Could not update the password: ${detail}`
+                    : "Could not complete the password reset. Request a new reset email if the link expired.", true);
             } finally {
                 document.querySelector("#admin-new-password").value = "";
                 document.querySelector("#admin-confirm-password").value = "";
@@ -938,7 +948,15 @@
             await verifyAdmin(data.session);
         } else if (passwordRecoveryMode) {
             showLoginView();
-            setMessage(loginMessage, "This reset link is invalid or has expired. Request a new password reset email.", true);
+            const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+            const recoveryCode = hash.get("error_code") || hash.get("error");
+            const recoveryDescription = hash.get("error_description");
+            const expiredLink = recoveryCode === "otp_expired" || /expired|invalid/i.test(recoveryDescription || "");
+            setMessage(loginMessage, expiredLink
+                ? "This reset link has expired or has already been used. Request a new password reset email."
+                : recoveryDescription
+                    ? `Supabase could not verify this reset link: ${recoveryDescription}`
+                    : "This reset link could not be verified. Request a new password reset email.", true);
         }
 
         document.querySelector("#admin-signout").addEventListener("click", async function () {
