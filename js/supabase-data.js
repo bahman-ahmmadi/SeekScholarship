@@ -48,11 +48,10 @@
                 .select("id, name, funding, deadline, is_featured, countries(name)")
                 .eq("status", "published")
                 .eq("is_featured", true)
-                .order("created_at", { ascending: false })
-                .limit(3);
+                .order("created_at", { ascending: false });
 
             if (error) throw error;
-            return (data || []).map(normalizeScholarship);
+            return (data || []).filter(row => window.scholarlyDeadline.isActive(row.deadline)).slice(0, 3).map(normalizeScholarship);
         },
 
         async getPublishedScholarships() {
@@ -63,7 +62,7 @@
                 .order("created_at", { ascending: false });
 
             if (error) throw error;
-            return (data || []).map(normalizeScholarship);
+            return (data || []).filter(row => window.scholarlyDeadline.isActive(row.deadline)).map(normalizeScholarship);
         },
 
         async getScholarship(id) {
@@ -75,7 +74,7 @@
                 .maybeSingle();
 
             if (error) throw error;
-            return data ? normalizeScholarship(data, true) : null;
+            return data && window.scholarlyDeadline.isActive(data.deadline) ? normalizeScholarship(data, true) : null;
         },
 
         async getCountries() {

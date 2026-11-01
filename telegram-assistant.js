@@ -1,3 +1,5 @@
+import { isScholarshipDeadlineActive } from "./deadline-utils.js";
+
 const TELEGRAM_API = "https://api.telegram.org";
 const TELEGRAM_CHANNEL = "@SeekScholarship";
 const TOKEN_LIFETIME_MS = 48 * 60 * 60 * 1000;
@@ -86,7 +88,8 @@ async function fetchPublishedScholarship(env, id) {
         limit: "1"
     });
     const rows = await supabaseRequest(env, `scholarships?${query}`);
-    return Array.isArray(rows) ? rows[0] || null : null;
+    const scholarship = Array.isArray(rows) ? rows[0] || null : null;
+    return scholarship && isScholarshipDeadlineActive(scholarship.deadline) ? scholarship : null;
 }
 
 async function sourceVersion(scholarship) {

@@ -1,3 +1,5 @@
+import { isScholarshipDeadlineActive, todayInScholarshipTimeZone } from "./deadline-utils.js";
+
 const pending = new Map();
 const FRESH_MS = 60_000;
 const RETAIN_SECONDS = 86400;
@@ -9,13 +11,13 @@ async function refreshCountries(env, key) {
         let offset = 0;
         while (true) {
             const url = new URL(`${env.SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/scholarships`);
-            url.search = new URLSearchParams({select: "id,countries(name,flag_path,is_active)", status: "eq.published", order: "id", offset: String(offset), limit: "1000"});
+            url.search = new URLSearchParams({select: "id,deadline,countries(name,flag_path,is_active)", status: "eq.published", order: "id", offset: String(offset), limit: "1000"});
             const response = await fetch(url, {headers: {apikey: env.SUPABASE_PUBLISHABLE_KEY, Accept: "application/json", Prefer: "count=exact"}, signal: AbortSignal.timeout(6000)});
             if (!response.ok) throw new Error(`Country data returned HTTP ${response.status}`);
             const rows = await response.json();
             if (!Array.isArray(rows)) throw new Error("Invalid country data");
             if (!rows.length) break;
-            rows.forEach(row => {
+            rows.filter(row => isScholarshipDeadlineActive(row.deadline)).forEach(row => {
                 const country = row.countries;
                 if (!country?.name || country.is_active === false) return;
                 const item = countries.get(country.name) || {name: country.name, flag_path: country.flag_path || "", count: 0};
@@ -36,8 +38,9 @@ async function refreshCountries(env, key) {
 
 export async function serveCountryData(request, env, ctx) {
     if (request.method !== "GET") return new Response("Method Not Allowed", {status: 405, headers: {Allow: "GET"}});
-    const url = new URL("/__country-cache-v1", request.url);
+    const url = new URL("/__country-cache-v2", request.url);
     url.searchParams.set("project", env.SUPABASE_URL);
+    url.searchParams.set("date", todayInScholarshipTimeZone());
     const key = new Request(url);
     let cached;
     try { const entry = await caches.default.match(key); if (entry) cached = await entry.json(); } catch (_) {}

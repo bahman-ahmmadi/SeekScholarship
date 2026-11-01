@@ -2,6 +2,7 @@ import { serveCountryData } from "./country-data.js";
 import { serveFeaturedHome } from "./featured-home.js";
 import { handleTelegramDraftRequest, handleTelegramWebhook } from "./telegram-assistant.js";
 import { canonicalRedirect, withCanonical } from "./canonical.js";
+import { isScholarshipDeadlineActive } from "./deadline-utils.js";
 
 const STATIC_PUBLIC_URLS = [
     "https://seekscholarship.com/",
@@ -44,7 +45,7 @@ async function getPublishedScholarshipIds(env) {
     }
 
     const endpoint = new URL(`${env.SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/scholarships`);
-    endpoint.searchParams.set("select", "id");
+    endpoint.searchParams.set("select", "id,deadline");
     endpoint.searchParams.set("status", "eq.published");
     endpoint.searchParams.set("order", "id.asc");
 
@@ -79,7 +80,7 @@ async function getPublishedScholarshipIds(env) {
 
         if (rows.length === 0) break;
 
-        rows.forEach(function (row) {
+        rows.filter(row => isScholarshipDeadlineActive(row.deadline)).forEach(function (row) {
             if (row.id === null || row.id === undefined) {
                 throw new Error("Supabase returned a scholarship without an id");
             }

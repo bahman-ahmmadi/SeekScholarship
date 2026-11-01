@@ -1,3 +1,5 @@
+import { isScholarshipDeadlineActive, todayInScholarshipTimeZone } from "./deadline-utils.js";
+
 const FRESH_MS = 60_000;
 const RETAIN_SECONDS = 300;
 const inFlight = new Map();
@@ -37,7 +39,7 @@ async function refreshFeatured(env, cacheKey) {
         const endpoint = new URL(`${env.SUPABASE_URL.replace(/\/+$/, "")}/rest/v1/scholarships`);
         endpoint.search = new URLSearchParams({
             select: "id,name,funding,deadline,is_featured,countries(name)",
-            status: "eq.published", is_featured: "eq.true", order: "created_at.desc", limit: "3"
+            status: "eq.published", is_featured: "eq.true", order: "created_at.desc"
         }).toString();
         const response = await fetch(endpoint, {
             headers: { apikey: env.SUPABASE_PUBLISHABLE_KEY, Accept: "application/json" },
@@ -48,7 +50,7 @@ async function refreshFeatured(env, cacheKey) {
         if (!Array.isArray(rows) || rows.some(row => !row || row.id == null || typeof row.name !== "string")) {
             throw new Error("Invalid featured scholarships response");
         }
-        const result = { savedAt: Date.now(), rows: rows.slice(0, 3) };
+        const result = { savedAt: Date.now(), rows: rows.filter(row => isScholarshipDeadlineActive(row.deadline)).slice(0, 3) };
         try {
             await caches.default.put(cacheKey, new Response(JSON.stringify(result), {
                 headers: { "Content-Type": "application/json", "Cache-Control": `public, max-age=${RETAIN_SECONDS}` }
@@ -67,6 +69,7 @@ async function getFeatured(request, env, ctx) {
     // One public-data cache entry per origin/project, independent of visitor cookies or filters.
     const keyUrl = new URL("/__featured-cache-v1", request.url);
     keyUrl.searchParams.set("project", env.SUPABASE_URL);
+    keyUrl.searchParams.set("date", todayInScholarshipTimeZone());
     const cacheKey = new Request(keyUrl);
     try {
         const cached = await caches.default.match(cacheKey);
