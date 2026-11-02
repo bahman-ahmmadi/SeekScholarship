@@ -85,6 +85,17 @@
         dashboard.hidden = true;
     }
 
+    function showRecoveryRequestView(message) {
+        clearAdminState();
+        loginPanel.hidden = true;
+        recoveryPanel.hidden = false;
+        newPasswordPanel.hidden = true;
+        dashboard.hidden = true;
+        document.querySelector("#admin-recovery-title").textContent = "Request a new reset link";
+        setMessage(recoveryMessage, message, true);
+        document.querySelector("#admin-recovery-email").focus();
+    }
+
     async function showPasswordUpdate(session) {
         if (!session || !session.user) return false;
         // A valid password-recovery session is enough to update its own account password.
@@ -829,6 +840,7 @@
         });
         document.querySelector("#admin-forgot-password").addEventListener("click", function () {
             document.querySelector("#admin-recovery-email").value = document.querySelector("#admin-email").value.trim();
+            document.querySelector("#admin-recovery-title").textContent = "Reset your password";
             loginPanel.hidden = true;
             recoveryPanel.hidden = false;
             newPasswordPanel.hidden = true;
@@ -848,7 +860,7 @@
             try {
                 const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: redirectTo.href });
                 if (error) throw error;
-                setMessage(recoveryMessage, "If an account exists for that address, a password reset link has been sent.", false);
+                setMessage(recoveryMessage, "If an admin account matches, a new reset link has been sent. Open the newest email soon; reset links expire after one hour and can only be used once.", false);
             } catch (error) {
                 const detail = String(error?.message || "").slice(0, 240);
                 const redirectRejected = /redirect/i.test(detail) && /(not allowed|invalid|allowlist|allow list)/i.test(detail);
@@ -933,16 +945,18 @@
         } else if (data.session) {
             await verifyAdmin(data.session);
         } else if (passwordRecoveryMode) {
-            showLoginView();
             const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
             const recoveryCode = hash.get("error_code") || hash.get("error");
             const recoveryDescription = hash.get("error_description");
             const expiredLink = recoveryCode === "otp_expired" || /expired|invalid/i.test(recoveryDescription || "");
-            setMessage(loginMessage, expiredLink
-                ? "This reset link has expired or has already been used. Request a new password reset email."
-                : recoveryDescription
+            if (expiredLink) {
+                showRecoveryRequestView("This reset link has expired or has already been used. Supabase reset links normally expire after one hour. Enter your admin email below to request a fresh link, then open the newest email promptly.");
+            } else {
+                showLoginView();
+                setMessage(loginMessage, recoveryDescription
                     ? `Supabase could not verify this reset link: ${recoveryDescription}`
-                    : "This reset link could not be verified. Request a new password reset email.", true);
+                    : "This reset link could not be verified. Choose “Forgot password?” to request a new one.", true);
+            }
         }
 
         document.querySelector("#admin-signout").addEventListener("click", async function () {
