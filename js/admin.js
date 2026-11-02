@@ -87,22 +87,8 @@
 
     async function showPasswordUpdate(session) {
         if (!session || !session.user) return false;
-        const epoch = authEpoch;
-        const { data: allowed, error } = await client.rpc("is_admin");
-        if (epoch !== authEpoch) return false;
-        if (error) {
-            showLoginView();
-            setMessage(loginMessage, "Could not verify admin access right now. Your session is still saved; reload this page to try again.", true);
-            return false;
-        }
-        if (allowed !== true) {
-            await client.auth.signOut({ scope: "local" });
-            passwordRecoveryMode = false;
-            showLoginView();
-            setMessage(loginMessage, "This account does not have SeekScholarship admin access.", true);
-            return false;
-        }
-
+        // A valid password-recovery session is enough to update its own account password.
+        // Admin authorization is checked separately before the dashboard is shown.
         passwordRecoveryMode = true;
         loginPanel.hidden = true;
         recoveryPanel.hidden = true;
