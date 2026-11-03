@@ -194,11 +194,7 @@ function makeScholarshipPost(scholarship) {
     if (countryTag) tags.push(`#${countryTag}`);
     tags.push("#Students");
 
-    let applyUrl = `https://seekscholarship.com/scholarship?id=${encodeURIComponent(String(scholarship.id))}`;
-    try {
-        const url = new URL(String(scholarship.application_url || ""));
-        if (["https:", "http:"].includes(url.protocol)) applyUrl = url.href;
-    } catch (_) { /* Use the scholarship details page when no valid apply URL is saved. */ }
+    const scholarshipUrl = `https://seekscholarship.com/scholarship?id=${encodeURIComponent(String(scholarship.id))}`;
 
     return [
         simpleText(scholarship.name, 220),
@@ -210,21 +206,18 @@ function makeScholarshipPost(scholarship) {
         `Award country: ${country || "Not specified"}`,
         `Last date: ${postDeadline(scholarship.deadline)}`,
         "",
-        `Apply Link: ${applyUrl}`,
+        `View scholarship details: ${scholarshipUrl}`,
         "",
         tags.join(" ")
     ].join("\n");
 }
 
-function applicationPreview(text) {
-    const match = /^Apply Link: (https?:\/\/\S+)$/m.exec(String(text || ""));
+function postLinkPreview(text) {
+    const match = /^View scholarship details: (https?:\/\/\S+)$/m.exec(String(text || ""));
     if (!match) return { is_disabled: true };
     try {
         const url = new URL(match[1]);
-        // The fallback details page is not the scholarship provider's application page.
-        if (["seekscholarship.com", "www.seekscholarship.com"].includes(url.hostname) || url.username || url.password) {
-            return { is_disabled: true };
-        }
+        if (!["http:", "https:"].includes(url.protocol) || url.username || url.password) return { is_disabled: true };
         return { url: url.href, prefer_large_media: true, show_above_text: false };
     } catch (_) {
         return { is_disabled: true };
@@ -277,7 +270,7 @@ async function sendDraftToOwner(env, post, text, token, existingMessage) {
                 chat_id: chatId,
                 message_id: existingMessage.review_message_id,
                 text,
-                link_preview_options: applicationPreview(text),
+                link_preview_options: postLinkPreview(text),
                 reply_markup: keyboard
             });
         } catch (_) {
@@ -289,7 +282,7 @@ async function sendDraftToOwner(env, post, text, token, existingMessage) {
             chat_id: chatId,
             text,
             reply_markup: keyboard,
-            link_preview_options: applicationPreview(text)
+            link_preview_options: postLinkPreview(text)
         });
     }
     return message;
@@ -533,7 +526,7 @@ async function publishApprovedPost(env, post) {
         const message = await telegramCall(env, "sendMessage", {
             chat_id: TELEGRAM_CHANNEL,
             text: post.draft_text,
-            link_preview_options: applicationPreview(post.draft_text)
+            link_preview_options: postLinkPreview(post.draft_text)
         });
         const marked = await callRpc(env, "mark_telegram_scholarship_published", {
             p_post_id: post.id,
